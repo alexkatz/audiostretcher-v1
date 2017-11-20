@@ -1,0 +1,29 @@
+{
+  "name": "typescript-vscode-playground",
+  "version": "1.0.0",
+  "description": "A simple vscode starter repo for experimentation or quick coding/debugging in Typescript with a couple of nice features.",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --project tsconfig.json && cd ../client && yarn build",
+    "clear": "rm -r dist",
+    "lint-fix": "tslint -c tslint.json -p tsconfig.json --type-check --fix",
+    "lint": "tslint -c tslint.json -p tsconfig.json --type-check --format codeFrame --force",
+    "watch": "tsc --watch --project tsconfig.json",
+    "watch-lint": "tsc-watch --project tsconfig.json --onSuccess \"yarn lint\""
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.3",
+    "@types/express": "^4.0.39",
+    "@types/node": "^8.0.19",
+    "tsc": "^1.20150623.0",
+    "tsc-watch": "^1.0.8",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "ytdl-core": "^0.18.2"
+  }
+}
