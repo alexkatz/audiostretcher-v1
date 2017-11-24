@@ -89,7 +89,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   public componentWillReceiveProps(nextProps: TrackProps) {
     const { audioBuffer, height, player } = this.props;
     if (nextProps.audioBuffer !== audioBuffer) {
-      this.setChannelData(nextProps.audioBuffer);
+      this.setChannelData(nextProps.audioBuffer, undefined, undefined, this.draw);
     }
 
     if (nextProps.alpha !== this.props.alpha) {
@@ -119,6 +119,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
     const leftPolygonEndPixel = endPercent === 1 ? width : loopEndPixel + 1;
     const rightPolygonStartPixel = width - leftPolygonEndPixel;
     const rightPolygonEndPixel = width - leftPolygonEndPixel;
+    const clipPath = `polygon(${leftPolygonStartPixel}px 0%, ${leftPolygonEndPixel}px 0%, ${leftPolygonEndPixel}px 100%, ${leftPolygonStartPixel}px 100%)`;
     return (
       <div
         style={{
@@ -154,7 +155,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
             color: Color.MID_BLUE,
             zIndex: 1,
             ...Style.NO_SELECT,
-            clipPath: `polygon(${leftPolygonStartPixel}px 0%, ${leftPolygonEndPixel}px 0%, ${leftPolygonEndPixel}px 100%, ${leftPolygonStartPixel}px 100%)`,
+            clipPath,
           }}
           children={'audio stretcher'}
         />
@@ -185,7 +186,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
             color: Color.MID_BLUE,
             fontSize: Constant.FONT_SIZE.REGULAR,
             ...Style.NO_SELECT,
-            clipPath: `polygon(${leftPolygonStartPixel}px 0%, ${leftPolygonEndPixel}px 0%, ${leftPolygonEndPixel}px 100%, ${leftPolygonStartPixel}px 100%)`,
+            clipPath,
           }}
           children={playbackText}
         />
@@ -221,7 +222,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
             bottom: Constant.PADDING,
             left: 0,
             zIndex: 1,
-            clipPath: `polygon(${leftPolygonStartPixel}px 0%, ${leftPolygonEndPixel}px 0%, ${leftPolygonEndPixel}px 100%, ${leftPolygonStartPixel}px 100%)`,
+            clipPath,
           }}
         >
           {
@@ -407,7 +408,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
     this.setChannelData(this.props.audioBuffer, DEFAULT_LOCATORS, loopLocators);
   }
 
-  private setChannelData = (audioBuffer: AudioBuffer, zoomLocators: Locators = DEFAULT_LOCATORS, loopLocators: Locators = DEFAULT_LOCATORS) => {
+  private setChannelData = (audioBuffer: AudioBuffer, zoomLocators: Locators = DEFAULT_LOCATORS, loopLocators: Locators = DEFAULT_LOCATORS, callback = Constant.NO_OP) => {
     const getSubArray = (channelData: Float32Array): Float32Array => channelData.slice(
       Math.round(channelData.length * zoomLocators.startPercent),
       Math.round(channelData.length * zoomLocators.endPercent),
@@ -422,7 +423,13 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
       highPeak,
       zoomLocators,
       loopLocators,
-    });
+      waveformRects: this.getWaveformRects({
+        leftChannelData,
+        rightChannelData,
+        lowPeak,
+        highPeak,
+      }),
+    }, callback);
   }
 
   private getPeaks = (...channels: Float32Array[]): { highPeak: number, lowPeak: number } => {
@@ -468,8 +475,8 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
     });
   }
 
-  private getWaveformRects = (): WaveformRect[] => {
-    const { leftChannelData, rightChannelData, lowPeak, highPeak } = this.state;
+  private getWaveformRects = (data?: { leftChannelData: Float32Array; rightChannelData: Float32Array; lowPeak: number; highPeak: number; }): WaveformRect[] => {
+    const { lowPeak, highPeak, leftChannelData, rightChannelData } = (data || this.state);
     const { width, height } = this.props;
     const WAVEFORM_RESOLUTION_FACTOR = 0.5;
     const pixelCount = width / WAVEFORM_RESOLUTION_FACTOR;
@@ -536,7 +543,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   }
 
   private updateIntraFrameInfo = () => {
-    const { player } = this.props;
+    const { player, audioBuffer } = this.props;
     if (this.lastProgressSeconds && this.lastRenderTime) {
       if (this.lastProgressSeconds === player.playbackProgressSeconds) {
         const secondsSinceLastRender = (window.performance.now() - this.lastRenderTime) / 1000;
@@ -551,7 +558,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
     }
 
     if ((player.playbackProgressSeconds + this.additionalPlaybackProgressSeconds) >= (player.loopEndSeconds - player.loopStartSeconds)) {
-      player.position = player.loopStartPercent * player.buffer.length;
+      player.position = player.loopStartPercent * audioBuffer.length;
       player.playbackProgressSeconds = 0;
     }
 
@@ -559,13 +566,13 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   }
 
   private getPlaybackRenderInfo = (): PlaybackRenderInfo => {
-    const { player, width } = this.props;
+    const { player, width, audioBuffer } = this.props;
     if (!this.isPlaying) { return null; }
     const { loopLocators, zoomLocators: { startPercent: zoomStartPercent, endPercent: zoomEndPercent } } = this.state;
     const { startPercent: trueLocatorStartPercent, endPercent: trueLocatorEndPercent } = this.getTrueLocators(loopLocators);
     const { startPercent: relativeLocatorStartPercent } = this.getRelativeLocators(loopLocators);
     const zoomFactor = 1 / (zoomEndPercent - zoomStartPercent);
-    const progressPercent = (player.playbackProgressSeconds + this.additionalPlaybackProgressSeconds) / player.buffer.duration;
+    const progressPercent = (player.playbackProgressSeconds + this.additionalPlaybackProgressSeconds) / audioBuffer.duration;
     const progressWidth = (width * progressPercent) % ((width * trueLocatorEndPercent) - (width * trueLocatorStartPercent));
     const startPixel = width * relativeLocatorStartPercent;
     const endPixel = startPixel + progressWidth;

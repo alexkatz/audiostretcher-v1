@@ -18,13 +18,6 @@ export class Player {
 
     private phaseVocoder: any = null;
 
-    constructor() {
-        const ValidAudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
-        if (ValidAudioContext) {
-            this.audioContext = new ValidAudioContext();
-        }
-    }
-
     // PUBLIC 
 
     public audioContext: AudioContext = null;
@@ -32,10 +25,6 @@ export class Player {
     public playbackProgressSeconds: number = null;
     public loopStartPercent: number = 0;
     public loopEndPercent: number = 1;
-
-    public get buffer() {
-        return this.internalBuffer;
-    }
 
     public set alpha(value: number) {
         if (this.phaseVocoder) {
@@ -56,26 +45,27 @@ export class Player {
     }
 
     public get loopStartSeconds(): number {
-        return (this.loopStartPercent || 0) * this.buffer.duration;
+        return (this.loopStartPercent || 0) * this.internalBuffer.duration;
     }
 
     public get loopEndSeconds(): number {
-        return (this.loopEndPercent || 1) * this.buffer.duration;
+        return (this.loopEndPercent || 1) * this.internalBuffer.duration;
     }
 
-    public setBuffer = (buffer: AudioBuffer) => {
+    public setBuffer = async (arrayBuffer: ArrayBuffer) => {
+        if (this.scriptNode !== null) { this.scriptNode.disconnect(this.gainNode); }
+        if (this.gainNode !== null) { this.gainNode.disconnect(this.audioContext.destination); }
+        if (this.playbackStartedAt !== null) { this.stop(); }
+        if (this.audioContext !== null) { this.audioContext.close(); }
+        this.audioContext = this.getNewAudioContext();
+        const buffer = await this.audioContext.decodeAudioData(arrayBuffer);
         this.internalBuffer = buffer;
         this.audioBufferChangedListeners.forEach(listener => listener(buffer));
-        if (this.playbackStartedAt !== null) {
-            this.scriptNode.disconnect(this.gainNode);
-            this.gainNode.disconnect(this.audioContext.destination);
-            this.stop();
-        }
         this.phaseVocoder = new BufferedPV(FRAME_SIZE);
-        this.phaseVocoder.set_audio_buffer(this.buffer);
+        this.phaseVocoder.set_audio_buffer(this.internalBuffer);
         this.phaseVocoder.alpha = 1;
         this.phaseVocoder.position = 0;
-        this.scriptNode = this.audioContext.createScriptProcessor(4096, this.buffer.numberOfChannels, this.buffer.numberOfChannels);
+        this.scriptNode = this.audioContext.createScriptProcessor(4096, this.internalBuffer.numberOfChannels, this.internalBuffer.numberOfChannels);
         this.gainNode = this.audioContext.createGain();
         this.scriptNode.connect(this.gainNode);
         this.gainNode.connect(this.audioContext.destination);
@@ -84,12 +74,14 @@ export class Player {
 
     public setAudioFromFile = (file: File) => {
         const fileReader = new FileReader();
-        fileReader.onloadend = async () => this.setBuffer(await this.audioContext.decodeAudioData(fileReader.result));
+        fileReader.onloadend = async () => this.setBuffer(fileReader.result);
         fileReader.readAsArrayBuffer(file);
     }
 
     public setAudioFromBuffer = async (buffer: ArrayBuffer) => {
-        this.setBuffer(await this.audioContext.decodeAudioData(buffer));
+        if (this.audioContext !== null) { this.audioContext.close(); }
+        this.audioContext = this.getNewAudioContext();
+        return this.setBuffer(buffer);
     }
 
     public onAudioBufferChanged = (listener: AudioBufferChangedHandler): RemoveListener => {
@@ -101,7 +93,7 @@ export class Player {
     }
 
     public play = () => {
-        this.phaseVocoder.position = this.buffer.length * this.loopStartPercent;
+        this.phaseVocoder.position = this.internalBuffer.length * this.loopStartPercent;
         this.playbackProgressSeconds = 0;
         if (this.playbackStartedAt === null) {
             this.playbackStartedAt = this.audioContext.currentTime;
@@ -115,7 +107,7 @@ export class Player {
         this.loopStartPercent = Math.min(ensuredStartPercent, ensuredEndPercent);
         this.loopEndPercent = Math.max(ensuredStartPercent, ensuredEndPercent);
         if (this.playbackStartedAt !== null && prevStartPercent !== ensuredStartPercent) {
-            this.phaseVocoder.position = this.buffer.length * ensuredStartPercent;
+            this.phaseVocoder.position = this.internalBuffer.length * ensuredStartPercent;
             this.playbackProgressSeconds = 0;
         }
     }
@@ -126,6 +118,14 @@ export class Player {
     }
 
     // PRIVATE 
+
+    private getNewAudioContext = () => {
+        const ValidAudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
+        if (ValidAudioContext) {
+            return new ValidAudioContext();
+        }
+        return null;
+    }
 
     private onAudioProcess = ({ outputBuffer }: AudioProcessingEvent) => {
         if (this.playbackStartedAt !== null) {

@@ -6,24 +6,12 @@ import { Style } from '../shared/styles';
 interface AlphaSliderProps {
   style?: React.CSSProperties;
   alpha: number;
-  width: number;
   onAlphaChange(alpha: number);
 }
 
-interface AlphaSliderState {
-  isMouseDown: boolean;
-}
-
-class AlphaSlider extends React.Component<AlphaSliderProps, AlphaSliderState> {
+class AlphaSlider extends React.Component<AlphaSliderProps> {
   private containerDiv: HTMLDivElement = null;
   private isMouseDown: boolean = false;
-
-  constructor(props: AlphaSliderProps) {
-    super(props);
-    this.state = {
-      isMouseDown: false,
-    };
-  }
 
   public componentDidMount() {
     window.addEventListener('mousemove', this.onMouseMove);
@@ -36,8 +24,9 @@ class AlphaSlider extends React.Component<AlphaSliderProps, AlphaSliderState> {
   }
 
   public render() {
-    const { style, width, alpha } = this.props;
+    const { style, alpha } = this.props;
     const percent = Constant.GET_SLIDER_PERCENT_FROM_ALPHA(alpha);
+    const width = this.containerDiv ? this.containerDiv.getBoundingClientRect().width : 0;
     return (
       <div
         ref={node => this.containerDiv = node}
@@ -49,69 +38,37 @@ class AlphaSlider extends React.Component<AlphaSliderProps, AlphaSliderState> {
       >
         <div
           style={{
-            position: 'absolute',
-            display: 'flex',
-            alignItems: 'center',
-            top: 0,
-            left: 0,
-            height: '100%',
-            width: width * percent,
-            backgroundColor: Color.DARK_BLUE,
-            overflow: 'hidden',
-            paddingLeft: Constant.PADDING,
             color: Color.MID_BLUE,
-            fontSize: Constant.FONT_SIZE.REGULAR,
-            whiteSpace: 'nowrap',
-            zIndex: 1,
-          }}
-        >
-          <div
-            style={{
-              color: Color.MID_BLUE,
-              fontSize: Constant.FONT_SIZE.REGULAR,
-              position: 'absolute',
-              left: Constant.PADDING,
-              top: Constant.PADDING,
-            }}
-          >
-            playback speed
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              color: Color.MID_BLUE,
-              fontSize: Constant.FONT_SIZE.REGULAR,
-              right: -width * (1 - percent) + Constant.PADDING,
-              top: Constant.PADDING,
-              ...Style.NO_SELECT,
-            }}
-          >
-            {`${(Constant.GET_ALPHA_PERCENT_FROM_SLIDER_PERCENT(percent) * 100).toFixed(2)}%`}
-          </div>
-        </div>
-        <div
-          style={{
-            color: Color.DARK_BLUE,
             fontSize: Constant.FONT_SIZE.REGULAR,
             position: 'absolute',
             left: Constant.PADDING,
             top: Constant.PADDING,
+            zIndex: 1,
           }}
-        >
-          playback speed
-        </div>
+          children={'playback speed'}
+        />
         <div
           style={{
             position: 'absolute',
-            color: Color.DARK_BLUE,
+            color: Color.MID_BLUE,
             fontSize: Constant.FONT_SIZE.REGULAR,
             right: Constant.PADDING,
             top: Constant.PADDING,
+            zIndex: 1,
             ...Style.NO_SELECT,
           }}
-        >
-          {`${(Constant.GET_ALPHA_PERCENT_FROM_SLIDER_PERCENT(percent) * 100).toFixed(2)}%`}
-        </div>
+          children={`${(Constant.GET_ALPHA_PERCENT_FROM_SLIDER_PERCENT(percent) * 100).toFixed(2)}%`}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: `${percent * 100}%`,
+            backgroundColor: Color.DARK_BLUE,
+          }}
+        />
       </div>
     );
   }
@@ -135,8 +92,8 @@ class AlphaSlider extends React.Component<AlphaSliderProps, AlphaSliderState> {
   }
 
   private handleMouse = (e: MouseEvent) => {
-    const { width, onAlphaChange } = this.props;
-    const { left } = this.containerDiv.getBoundingClientRect();
+    const { onAlphaChange } = this.props;
+    const { width, left } = this.containerDiv.getBoundingClientRect();
     const x = e.clientX - left;
     const percent = Constant.ENSURE_RANGE_INCLUSIVE(x / width);
     let alpha = Constant.GET_ALPHA_FROM_SLIDER_PERCENT(percent);
