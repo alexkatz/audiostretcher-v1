@@ -41,6 +41,7 @@ interface TrackProps {
   audioBuffer?: AudioBuffer;
   player: Player;
   alpha: number;
+  gain: number;
 }
 
 interface TrackState {
@@ -68,10 +69,11 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   }
 
   public componentWillMount() {
-    const { audioBuffer } = this.props;
+    const { audioBuffer, alpha, gain, player } = this.props;
     if (audioBuffer) {
       this.setChannelData(audioBuffer);
-      this.props.player.alpha = this.props.alpha;
+      player.alpha = alpha;
+      player.gain = gain;
     }
   }
 
@@ -87,13 +89,17 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   }
 
   public componentWillReceiveProps(nextProps: TrackProps) {
-    const { audioBuffer, height, player } = this.props;
+    const { audioBuffer, height, player, alpha, gain } = this.props;
     if (nextProps.audioBuffer !== audioBuffer) {
       this.setChannelData(nextProps.audioBuffer, undefined, undefined, this.draw);
     }
 
-    if (nextProps.alpha !== this.props.alpha) {
+    if (nextProps.alpha !== alpha) {
       player.alpha = nextProps.alpha;
+    }
+
+    if (nextProps.gain !== gain) {
+      player.gain = nextProps.gain;
     }
   }
 

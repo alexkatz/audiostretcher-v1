@@ -3,15 +3,20 @@ import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
 import { Style } from '../shared/styles';
 
-interface GainSliderProps {
+interface VerticalSliderProps {
   style?: React.CSSProperties;
-  gain: number;
-  onGainChange(gain: number);
+  percent: number;
+  onPercentChange(percent: number);
+  defaultValue?: number;
 }
 
-class GainSlider extends React.Component<GainSliderProps> {
+class VerticalSlider extends React.Component<VerticalSliderProps> {
   private containerDiv: HTMLDivElement = null;
   private isMouseDown: boolean = false;
+
+  public static defaultProps: Partial<VerticalSliderProps> = {
+    defaultValue: 1,
+  };
 
   public componentDidMount() {
     window.addEventListener('mousemove', this.onMouseMove);
@@ -26,8 +31,8 @@ class GainSlider extends React.Component<GainSliderProps> {
   public render() {
     const {
       style,
-      gain,
-      onGainChange,
+      percent,
+      onPercentChange,
     } = this.props;
     return (
       <div
@@ -51,14 +56,14 @@ class GainSlider extends React.Component<GainSliderProps> {
             ...Style.NO_SELECT,
             zIndex: 1,
           }}
-          children={`${(gain * 100).toFixed(2)}%`}
+          children={`${(percent * 100).toFixed(2)}%`}
         />
         <div
           style={{
             position: 'absolute',
             left: 0,
             bottom: 0,
-            height: `${gain * 100}%`,
+            height: `${percent * 100}%`,
             width: '100%',
             backgroundColor: Color.DARK_BLUE,
           }}
@@ -69,12 +74,12 @@ class GainSlider extends React.Component<GainSliderProps> {
 
   private onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     this.isMouseDown = true;
-    this.handleMouse(e.clientY);
+    this.handleMouse(e as any);
   }
 
   private onMouseMove = (e: MouseEvent) => {
     if (this.isMouseDown) {
-      this.handleMouse(e.clientY);
+      this.handleMouse(e);
     }
   }
 
@@ -83,14 +88,20 @@ class GainSlider extends React.Component<GainSliderProps> {
 
   }
 
-  private handleMouse = (clientY: number) => {
-    const { onGainChange } = this.props;
+  private handleMouse = (e: MouseEvent) => {
+    const { onPercentChange, defaultValue } = this.props;
     const { height, top } = this.containerDiv.getBoundingClientRect();
-    let y = clientY - top;
+    let y = e.clientY - top;
     if (y < 0) { y = 0; }
     if (y > height) { y = height; }
-    onGainChange((height - y) / height);
+    let percent = (height - y) / height;
+    if (e.shiftKey) {
+      percent = Math.round(percent * 100) / 100;
+    } else if (e.altKey) {
+      percent = defaultValue;
+    }
+    onPercentChange(percent);
   }
 }
 
-export { GainSlider };
+export { VerticalSlider };

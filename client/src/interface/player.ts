@@ -44,6 +44,16 @@ export class Player {
         this.phaseVocoder.position = value;
     }
 
+    public set gain(value: number) {
+        if (this.gainNode !== null) {
+            this.gainNode.gain.value = value;
+        }
+    }
+
+    public get gain() {
+        return this.gainNode !== null ? this.gainNode.gain.value : null;
+    }
+
     public get loopStartSeconds(): number {
         return (this.loopStartPercent || 0) * this.internalBuffer.duration;
     }

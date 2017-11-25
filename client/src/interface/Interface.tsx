@@ -5,7 +5,9 @@ import { Constant } from '../shared/constants';
 import { Track } from './Track';
 import { AlphaSlider } from './AlphaSlider';
 import { Style } from '../shared/styles';
-import { GainSlider } from './GainSlider';
+import { VerticalSlider } from './VerticalSlider';
+
+const DEFAULT_GAIN = 0.75;
 
 interface InterfaceProps {
   width: number;
@@ -25,7 +27,7 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
     super(props);
     this.state = {
       alpha: 1,
-      gain: 0.75,
+      gain: DEFAULT_GAIN,
       urlText: '',
     };
   }
@@ -48,6 +50,7 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
           audioBuffer={audioBuffer}
           player={player}
           alpha={alpha}
+          gain={gain}
         />
         <div
           style={{
@@ -78,14 +81,15 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
             display: 'flex',
           }}
         >
-          <GainSlider
+          <VerticalSlider
             style={{
               position: 'absolute',
               width: Constant.HEADER_HEIGHT * 2,
               height: '100%',
             }}
-            gain={gain}
-            onGainChange={gain => this.setState({ gain })}
+            percent={gain}
+            onPercentChange={gain => this.setState({ gain })}
+            defaultValue={DEFAULT_GAIN}
           />
         </div>
         <input
