@@ -36,12 +36,15 @@ enum Locator {
 }
 
 interface TrackProps {
+  style?: React.CSSProperties;
   width: number;
   height: number;
   audioBuffer?: AudioBuffer;
   player: Player;
   alpha: number;
   gain: number;
+  pan: number;
+  userInteractionEnabled?: boolean;
 }
 
 interface TrackState {
@@ -65,15 +68,22 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
 
   constructor(props: TrackProps) {
     super(props);
-    this.state = { loopLocators: DEFAULT_LOCATORS, waveformRects: [] };
+    this.state = {
+      loopLocators: DEFAULT_LOCATORS, waveformRects: [],
+    };
   }
 
+  public static defaultProps: Partial<TrackProps> = {
+    userInteractionEnabled: true,
+  };
+
   public componentWillMount() {
-    const { audioBuffer, alpha, gain, player } = this.props;
+    const { audioBuffer, alpha, gain, pan, player } = this.props;
     if (audioBuffer) {
       this.setChannelData(audioBuffer);
       player.alpha = alpha;
       player.gain = gain;
+      player.pan = pan;
     }
   }
 
@@ -89,7 +99,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   }
 
   public componentWillReceiveProps(nextProps: TrackProps) {
-    const { audioBuffer, height, player, alpha, gain } = this.props;
+    const { audioBuffer, height, player, alpha, gain, pan } = this.props;
     if (nextProps.audioBuffer !== audioBuffer) {
       this.setChannelData(nextProps.audioBuffer, undefined, undefined, this.draw);
     }
@@ -101,10 +111,14 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
     if (nextProps.gain !== gain) {
       player.gain = nextProps.gain;
     }
+
+    if (nextProps.pan !== pan) {
+      player.pan = nextProps.pan;
+    }
   }
 
   public componentDidUpdate(prevProps: TrackProps, prevState: TrackState) {
-    if (this.state.zoomLocators !== prevState.zoomLocators || this.props.width !== prevProps.width) {
+    if (this.state.zoomLocators !== prevState.zoomLocators || this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
       this.setState({ waveformRects: this.getWaveformRects() }, this.draw);
       return;
     }
@@ -116,7 +130,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   }
 
   public render() {
-    const { width, height } = this.props;
+    const { width, height, style } = this.props;
     const { playbackText, loopStartText, loopEndText } = this.getTimeIndicatorValues();
     const { startPercent, endPercent } = this.getRelativeLocators();
     const loopStartPixel = width * startPercent;
@@ -129,6 +143,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
     return (
       <div
         style={{
+          ...style,
           position: 'relative',
           width,
           height,
@@ -140,7 +155,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
             top: 0,
             left: 0,
             width,
-            textAlign: 'right',
+            textAlign: 'left',
             padding: Constant.PADDING,
             fontSize: Constant.FONT_SIZE.REGULAR,
             color: Color.DARK_BLUE,
@@ -155,7 +170,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
             top: 0,
             left: 0,
             width,
-            textAlign: 'right',
+            textAlign: 'left',
             padding: Constant.PADDING,
             fontSize: Constant.FONT_SIZE.REGULAR,
             color: Color.MID_BLUE,
@@ -355,7 +370,8 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
     const { shiftLocator, loopLocators: { endPercent: originalEndPercent } } = this.state;
     if (startPercent === 0 && originalEndPercent === 1) { return; }
     const { left } = this.canvas.getBoundingClientRect();
-    const x = clientX - left;
+    const delta = clientX - left;
+    const x = delta < 0 ? 0 : delta;
     const calculatedEndPercent = x / width;
     const endPercent = !shiftLocator || shiftLocator !== Locator.Start ? (Math.abs(startPercent - calculatedEndPercent) > MIN_LOOP_PERCENT ? calculatedEndPercent : 1) : originalEndPercent;
     this.setState({
@@ -366,18 +382,20 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   }
 
   private onKeyDown = (e: KeyboardEvent) => {
-    if (!e.metaKey) {
-      e.preventDefault();
-      e.stopPropagation();
-      switch (e.keyCode) {
-        case Constant.Key.SHIFT:
-          break;
-        case Constant.Key.Z:
-          return e.shiftKey ? this.zoomOut() : this.zoomIn(this.getTrueLocators(this.getRelativeLocators()));
-        case Constant.Key.SPACE:
-          return e.shiftKey ? this.stopPlayback() : this.startPlayback();
-        case Constant.Key.ESCAPE:
-          return this.stopPlayback();
+    if (this.props.userInteractionEnabled) {
+      if (!e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        switch (e.keyCode) {
+          case Constant.Key.SHIFT:
+            break;
+          case Constant.Key.Z:
+            return e.shiftKey ? this.zoomOut() : this.zoomIn(this.getTrueLocators(this.getRelativeLocators()));
+          case Constant.Key.SPACE:
+            return e.shiftKey ? this.stopPlayback() : this.startPlayback();
+          case Constant.Key.ESCAPE:
+            return this.stopPlayback();
+        }
       }
     }
   }
@@ -484,7 +502,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   private getWaveformRects = (data?: { leftChannelData: Float32Array; rightChannelData: Float32Array; lowPeak: number; highPeak: number; }): WaveformRect[] => {
     const { lowPeak, highPeak, leftChannelData, rightChannelData } = (data || this.state);
     const { width, height } = this.props;
-    const WAVEFORM_RESOLUTION_FACTOR = 0.5;
+    const WAVEFORM_RESOLUTION_FACTOR = 1;
     const pixelCount = width / WAVEFORM_RESOLUTION_FACTOR;
     const peak = Math.max(Math.abs(lowPeak), highPeak);
     const NORMALIZE_FACTOR = (rightChannelData ? height * 0.25 : height * 0.5) / peak;

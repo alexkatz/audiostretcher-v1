@@ -1,10 +1,11 @@
 import { Locators } from '../interface/Track';
 
-const HEADER_HEIGHT = 70;
+const SLIDER_WIDTH = 75;
 const CANVAS_HEIGHT_PERCENT = 0.7;
 const MIN_ALPHA = 0.5;
 const MAX_ALPHA = 5;
-const GET_CANVAS_HEIGHT = (height: number): number => (height - HEADER_HEIGHT) * CANVAS_HEIGHT_PERCENT;
+const GET_PAN_FROM_PERCENT = (percent: number): number => (2 * percent) - 1;
+const GET_PAN_PERCENT_FROM_PAN = (pan: number): number => (pan + 1) / 2;
 const GET_ALPHA_FROM_SLIDER_PERCENT = (sliderPercent: number): number => MIN_ALPHA + ((MAX_ALPHA - MIN_ALPHA) * sliderPercent);
 const GET_ALPHA_FROM_ALPHA_PERCENT = (alphaPercent: number): number => 1 / alphaPercent;
 const GET_SLIDER_PERCENT_FROM_ALPHA = (alpha: number): number => (alpha - MIN_ALPHA) / (MAX_ALPHA - MIN_ALPHA);
@@ -48,6 +49,7 @@ export const Constant = {
         REGULAR: 400 as 400,
     },
     FONT_SIZE: {
+        TINY: 10,
         SMALL: 15,
         REGULAR: 20,
         LARGE: 40,
@@ -61,12 +63,13 @@ export const Constant = {
         S: 83,
     },
     NO_OP: (() => { }) as () => void,
-    HEADER_HEIGHT,
+    SLIDER_WIDTH,
     CANVAS_HEIGHT_PERCENT,
     LOCATORS_ARE_EQUAL,
     MIN_ALPHA,
     MAX_ALPHA,
-    GET_CANVAS_HEIGHT,
+    GET_PAN_FROM_PERCENT,
+    GET_PAN_PERCENT_FROM_PAN,
     GET_ALPHA_FROM_SLIDER_PERCENT,
     GET_ALPHA_FROM_ALPHA_PERCENT,
     GET_SLIDER_PERCENT_FROM_ALPHA,
@@ -74,4 +77,8 @@ export const Constant = {
     ENSURE_RANGE_INCLUSIVE,
     SECONDS_TO_HHMMSSMM,
     GET_YOUTUBE_AUDIO,
+    SLIDER_HANDLE_SIZE: 20,
+    SLIDER_TRACK_SIZE: 2,
+    SLIDER_SELECTED_TRACK_SIZE: 4,
+    BORDER_RADIUS: 10,
 };

@@ -8,6 +8,7 @@ interface VerticalSliderProps {
   percent: number;
   onPercentChange(percent: number);
   defaultValue?: number;
+  label?: string;
 }
 
 class VerticalSlider extends React.Component<VerticalSliderProps> {
@@ -15,7 +16,7 @@ class VerticalSlider extends React.Component<VerticalSliderProps> {
   private isMouseDown: boolean = false;
 
   public static defaultProps: Partial<VerticalSliderProps> = {
-    defaultValue: 1,
+    defaultValue: 0.75,
   };
 
   public componentDidMount() {
@@ -33,41 +34,54 @@ class VerticalSlider extends React.Component<VerticalSliderProps> {
       style,
       percent,
       onPercentChange,
+      label,
     } = this.props;
+    const height = this.containerDiv ? this.containerDiv.getBoundingClientRect().height : 0;
     return (
       <div
-        ref={node => this.containerDiv = node}
+        ref={node => {
+          if (this.containerDiv === null) {
+            this.containerDiv = node;
+            this.forceUpdate();
+          }
+        }}
         style={{
           position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
+          ...Style.BORDER_RADIUS,
+          ...Style.INNER_BLUE_BOX_SHADOW,
           ...style,
         }}
         onMouseDown={this.onMouseDown}
       >
-        <div
-          style={{
-            color: Color.MID_BLUE,
-            fontSize: Constant.FONT_SIZE.REGULAR,
-            right: Constant.PADDING,
-            top: Constant.PADDING,
-            ...Style.NO_SELECT,
-            zIndex: 1,
-          }}
-          children={`${(percent * 100).toFixed(2)}%`}
-        />
-        <div
+        {label && (
+          <div // label
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '100%',
+              color: Color.MID_BLUE,
+              zIndex: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: Constant.PADDING,
+              ...Style.NO_SELECT,
+            }}
+            children={label}
+          />
+        )}
+        <div // selected track path container
           style={{
             position: 'absolute',
             left: 0,
             bottom: 0,
-            height: `${percent * 100}%`,
+            height: height * percent,
             width: '100%',
             backgroundColor: Color.DARK_BLUE,
           }}
-        />
+        >
+        </div>
       </div>
     );
   }
@@ -91,10 +105,8 @@ class VerticalSlider extends React.Component<VerticalSliderProps> {
   private handleMouse = (e: MouseEvent) => {
     const { onPercentChange, defaultValue } = this.props;
     const { height, top } = this.containerDiv.getBoundingClientRect();
-    let y = e.clientY - top;
-    if (y < 0) { y = 0; }
-    if (y > height) { y = height; }
-    let percent = (height - y) / height;
+    const y = e.clientY - top - (Constant.SLIDER_SELECTED_TRACK_SIZE * 0.5);
+    let percent = Constant.ENSURE_RANGE_INCLUSIVE((height - y) / height);
     if (e.shiftKey) {
       percent = Math.round(percent * 100) / 100;
     } else if (e.altKey) {

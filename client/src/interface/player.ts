@@ -15,6 +15,7 @@ export class Player {
 
     private scriptNode: ScriptProcessorNode = null;
     private gainNode: GainNode = null;
+    private panNode: StereoPannerNode = null;
 
     private phaseVocoder: any = null;
 
@@ -50,8 +51,18 @@ export class Player {
         }
     }
 
-    public get gain() {
+    public get gain(): number {
         return this.gainNode !== null ? this.gainNode.gain.value : null;
+    }
+
+    public set pan(value: number) {
+        if (this.panNode !== null) {
+            this.panNode.pan.value = value;
+        }
+    }
+
+    public get pan(): number {
+        return this.panNode !== null ? this.panNode.pan.value : null;
     }
 
     public get loopStartSeconds(): number {
@@ -75,10 +86,16 @@ export class Player {
         this.phaseVocoder.set_audio_buffer(this.internalBuffer);
         this.phaseVocoder.alpha = 1;
         this.phaseVocoder.position = 0;
+
         this.scriptNode = this.audioContext.createScriptProcessor(4096, this.internalBuffer.numberOfChannels, this.internalBuffer.numberOfChannels);
         this.gainNode = this.audioContext.createGain();
+        this.panNode = this.audioContext.createStereoPanner();
+
+        // script -> gain ->  pan -> destination
         this.scriptNode.connect(this.gainNode);
-        this.gainNode.connect(this.audioContext.destination);
+        this.gainNode.connect(this.panNode);
+        this.panNode.connect(this.audioContext.destination);
+
         this.scriptNode.onaudioprocess = this.onAudioProcess;
     }
 
