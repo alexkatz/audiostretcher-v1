@@ -57,6 +57,7 @@ interface TrackState {
   shiftLocator: Locator;
   waveformRects: WaveformRect[];
   mouseDownX: number;
+  isAltKeyDown: boolean;
 }
 
 class Track extends React.Component<TrackProps, Partial<TrackState>> {
@@ -90,12 +91,14 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   public componentDidMount() {
     this.subscribeToWindowMouseEvents();
     window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('keyup', this.onKeyUp);
     this.setState({ waveformRects: this.getWaveformRects() }, this.draw);
   }
 
   public componentWillUnmount() {
     this.UnsubscribeFromWindowMouseEvents();
     window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('keyup', this.onKeyUp);
   }
 
   public componentWillReceiveProps(nextProps: TrackProps) {
@@ -397,6 +400,12 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
             return this.stopPlayback();
         }
       }
+    }
+  }
+
+  private onKeyUp = (e: KeyboardEvent) => {
+    if (this.props.userInteractionEnabled) {
+      
     }
   }
 
