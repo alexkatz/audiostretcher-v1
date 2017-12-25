@@ -13,11 +13,6 @@ interface HomeState {
   audioBuffer: AudioBuffer;
 }
 
-interface ReadResult {
-  done: boolean;
-  value?: any;
-}
-
 class Home extends React.Component<any, HomeState> {
   private player = new Player();
   private removeListeners: RemoveListener[] = [];

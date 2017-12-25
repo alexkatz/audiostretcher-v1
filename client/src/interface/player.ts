@@ -84,8 +84,6 @@ export class Player {
   }
 
   public setBuffer = async (arrayBuffer: ArrayBuffer) => {
-    if (this.scriptNode !== null) { this.scriptNode.disconnect(this.outputGainNode); }
-    if (this.outputGainNode !== null) { this.outputGainNode.disconnect(this.audioContext.destination); }
     if (this.playbackStartedAt !== null) { this.stop(); }
     if (this.audioContext !== null) { this.audioContext.close(); }
     this.audioContext = this.getNewAudioContext();
