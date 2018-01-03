@@ -16,6 +16,7 @@ interface InterfaceProps {
   height: number;
   audioBuffer?: AudioBuffer;
   player: Player;
+  onLoadUrl?(urlText: string);
 }
 
 interface InterfaceState {
@@ -24,11 +25,6 @@ interface InterfaceState {
   pan: number;
   urlText: string;
   isInputFocused: boolean;
-}
-
-interface ReadResult {
-  done: boolean;
-  value?: any;
 }
 
 class Interface extends React.Component<InterfaceProps, InterfaceState> {
@@ -44,7 +40,7 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
   }
 
   public render() {
-    const { width, height, audioBuffer, player } = this.props;
+    const { width, height, audioBuffer, player, onLoadUrl } = this.props;
     const { alpha, gain, pan, urlText, isInputFocused } = this.state;
     const alphaSliderPercent = Constant.GET_SLIDER_PERCENT_FROM_ALPHA(alpha);
     const halfHeight = height * 0.5;
@@ -217,7 +213,7 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
                   onBlur={() => this.setState({ isInputFocused: false })}
                 />
                 <button
-                  onClick={() => this.onLoadUrl(urlText)}
+                  onClick={() => onLoadUrl(urlText)}
                   style={{
                     fontSize: Constant.FONT_SIZE.REGULAR,
                     display: 'flex',
@@ -264,32 +260,6 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
     this.setState({ pan: Constant.GET_PAN_FROM_PERCENT(newPanPercent) });
   }
 
-  private onLoadUrl = async (url: string) => {
-    const { player } = this.props;
-    const result = await Constant.GET_YOUTUBE_AUDIO(url);
-    if (result) {
-      const reader = result.getReader();
-      let readResult: ReadResult = { done: false };
-      const arrays: Uint8Array[] = [];
-      let length = 0;
-      while (!readResult.done) {
-        readResult = await reader.read();
-        if (!readResult.done) {
-          const array = readResult.value;
-          arrays.push(array);
-          length += array.length;
-        }
-      }
-
-      const array = new Uint8Array(length);
-      arrays.reduce((length, arr) => {
-        array.set(arr, length);
-        return length += arr.length;
-      }, 0);
-
-      player.setAudioFromBuffer(array.buffer);
-    }
-  }
 }
 
 export { Interface };

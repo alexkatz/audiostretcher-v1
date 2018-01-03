@@ -13,6 +13,11 @@ interface HomeState {
   audioBuffer: AudioBuffer;
 }
 
+interface ReadResult {
+  done: boolean;
+  value?: any;
+}
+
 class Home extends React.Component<any, HomeState> {
   private player = new Player();
   private removeListeners: RemoveListener[] = [];
@@ -31,32 +36,6 @@ class Home extends React.Component<any, HomeState> {
   public componentWillUnmount() {
     this.removeListeners.forEach(removeListener => removeListener());
   }
-
-  // public async componentDidMount() {
-  //     const result = await Constant.GET_YOUTUBE_AUDIO('https://www.youtube.com/watch?v=l45f28PzfCI');
-  //     if (result) {
-  //         const reader = result.getReader();
-  //         let readResult: ReadResult = { done: false };
-  //         const arrays: Uint8Array[] = [];
-  //         let length = 0;
-  //         while (!readResult.done) {
-  //             readResult = await reader.read();
-  //             if (!readResult.done) {
-  //                 const array = readResult.value;
-  //                 arrays.push(array);
-  //                 length += array.length;
-  //             }
-  //         }
-
-  //         const array = new Uint8Array(length);
-  //         arrays.reduce((length, arr) => {
-  //             array.set(arr, length);
-  //             return length += arr.length;
-  //         }, 0);
-
-  //         this.player.setAudioFromBuffer(array.buffer);
-  //     }
-  // }
 
   public render() {
     const { audioBuffer } = this.state;
@@ -78,13 +57,19 @@ class Home extends React.Component<any, HomeState> {
                 height: '100%',
               } as React.CSSProperties}
             >
-              {!audioBuffer && (<Welcome width={width} />)}
+              {!audioBuffer && (
+                <Welcome
+                  width={width}
+                  onLoadUrl={this.onLoadUrl}
+                />
+              )}
               {audioBuffer && (
                 <Interface
                   width={width}
                   height={height}
                   audioBuffer={audioBuffer}
                   player={this.player}
+                  onLoadUrl={this.onLoadUrl}
                 />
               )}
             </Dropzone>
@@ -92,6 +77,39 @@ class Home extends React.Component<any, HomeState> {
         )}
       </AutoSizer>
     );
+  }
+
+  private onLoadUrl = async (url: string) => {
+    if (url === null
+      || url === undefined
+      || url.length === 0
+      || !Constant.IS_YOUTUBE_URL(url)) {
+      return;
+    }
+
+    const result = await Constant.GET_YOUTUBE_AUDIO(url);
+    if (result) {
+      const reader = result.getReader();
+      let readResult: ReadResult = { done: false };
+      const arrays: Uint8Array[] = [];
+      let length = 0;
+      while (!readResult.done) {
+        readResult = await reader.read();
+        if (!readResult.done) {
+          const array = readResult.value;
+          arrays.push(array);
+          length += array.length;
+        }
+      }
+
+      const array = new Uint8Array(length);
+      arrays.reduce((length, arr) => {
+        array.set(arr, length);
+        return length += arr.length;
+      }, 0);
+
+      this.player.setAudioFromBuffer(array.buffer);
+    }
   }
 }
 
