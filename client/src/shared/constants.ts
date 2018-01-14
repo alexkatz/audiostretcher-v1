@@ -43,6 +43,10 @@ const GET_YOUTUBE_AUDIO = async (url: string): Promise<ReadableStream> => {
     }
 };
 
+const IS_YOUTUBE_URL = (url: string): boolean =>
+    url.startsWith('https://www.youtube.com/')
+    || url.startsWith('https://www.youtu.be/');
+
 export const Constant = {
     FONT_WEIGHT: {
         LIGHT: 300 as 300,
@@ -74,6 +78,7 @@ export const Constant = {
     GET_ALPHA_FROM_ALPHA_PERCENT,
     GET_SLIDER_PERCENT_FROM_ALPHA,
     GET_ALPHA_PERCENT_FROM_SLIDER_PERCENT,
+    IS_YOUTUBE_URL,
     ENSURE_RANGE_INCLUSIVE,
     SECONDS_TO_HHMMSSMM,
     GET_YOUTUBE_AUDIO,
@@ -81,4 +86,5 @@ export const Constant = {
     SLIDER_TRACK_SIZE: 2,
     SLIDER_SELECTED_TRACK_SIZE: 4,
     BORDER_RADIUS: 10,
+    DEFAULT_INPUT_HEIGHT: 100,
 };

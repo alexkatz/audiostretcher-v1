@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { AutoSizer } from 'react-virtualized';
 import { DropzoneProps, DropFilesEventHandler } from 'react-dropzone';
+import { StyleRoot } from 'radium';
 import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
 import { Style } from '../shared/styles';
@@ -11,6 +12,7 @@ const Dropzone = require('react-dropzone').default as React.ComponentType<Dropzo
 
 interface HomeState {
   audioBuffer: AudioBuffer;
+  isGettingAudio: boolean;
 }
 
 interface ReadResult {
@@ -24,7 +26,7 @@ class Home extends React.Component<any, HomeState> {
 
   constructor(props: any) {
     super(props);
-    this.state = { audioBuffer: null };
+    this.state = { audioBuffer: null, isGettingAudio: false };
   }
 
   public componentWillMount() {
@@ -37,66 +39,85 @@ class Home extends React.Component<any, HomeState> {
     this.removeListeners.forEach(removeListener => removeListener());
   }
 
-  // public async componentDidMount() {
-  //     const result = await Constant.GET_YOUTUBE_AUDIO('https://www.youtube.com/watch?v=l45f28PzfCI');
-  //     if (result) {
-  //         const reader = result.getReader();
-  //         let readResult: ReadResult = { done: false };
-  //         const arrays: Uint8Array[] = [];
-  //         let length = 0;
-  //         while (!readResult.done) {
-  //             readResult = await reader.read();
-  //             if (!readResult.done) {
-  //                 const array = readResult.value;
-  //                 arrays.push(array);
-  //                 length += array.length;
-  //             }
-  //         }
-
-  //         const array = new Uint8Array(length);
-  //         arrays.reduce((length, arr) => {
-  //             array.set(arr, length);
-  //             return length += arr.length;
-  //         }, 0);
-
-  //         this.player.setAudioFromBuffer(array.buffer);
-  //     }
-  // }
-
   public render() {
-    const { audioBuffer } = this.state;
+    const { audioBuffer, isGettingAudio } = this.state;
     return (
       <AutoSizer>
         {({ width, height }) => (
-          <div
-            style={{
-              width,
-              height,
-              backgroundColor: Color.LIGHT_BLUE,
-            }}
-          >
-            <Dropzone
-              onDrop={([file]) => this.player.setAudioFromFile(file)}
-              disableClick={audioBuffer != null}
+          <StyleRoot>
+            <div
               style={{
-                width: '100%',
-                height: '100%',
-              } as React.CSSProperties}
+                width,
+                height,
+                backgroundColor: Color.LIGHT_BLUE,
+              }}
             >
-              {!audioBuffer && (<Welcome width={width} />)}
-              {audioBuffer && (
-                <Interface
-                  width={width}
-                  height={height}
-                  audioBuffer={audioBuffer}
-                  player={this.player}
-                />
-              )}
-            </Dropzone>
-          </div>
+              <Dropzone
+                onDrop={([file]) => this.player.setAudioFromFile(file)}
+                disableClick={audioBuffer != null}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                } as React.CSSProperties}
+              >
+                {!audioBuffer && (
+                  <Welcome
+                    width={width}
+                    onLoadUrl={this.onLoadUrl}
+                    isBusy={isGettingAudio}
+                  />
+                )}
+                {audioBuffer && (
+                  <Interface
+                    width={width}
+                    height={height}
+                    audioBuffer={audioBuffer}
+                    player={this.player}
+                    onLoadUrl={this.onLoadUrl}
+                    isGettingAudio={isGettingAudio}
+                  />
+                )}
+              </Dropzone>
+            </div>
+          </StyleRoot>
         )}
       </AutoSizer>
     );
+  }
+
+  private onLoadUrl = async (url: string) => {
+    if (url === null
+      || url === undefined
+      || url.length === 0
+      || !Constant.IS_YOUTUBE_URL(url)) {
+      return;
+    }
+
+    this.setState({ isGettingAudio: true }, async () => {
+      const result = await Constant.GET_YOUTUBE_AUDIO(url);
+      if (result) {
+        const reader = result.getReader();
+        let readResult: ReadResult = { done: false };
+        const arrays: Uint8Array[] = [];
+        let length = 0;
+        while (!readResult.done) {
+          readResult = await reader.read();
+          if (!readResult.done) {
+            const array = readResult.value;
+            arrays.push(array);
+            length += array.length;
+          }
+        }
+
+        const array = new Uint8Array(length);
+        arrays.reduce((length, arr) => {
+          array.set(arr, length);
+          return length += arr.length;
+        }, 0);
+
+        this.setState({ isGettingAudio: false }, () => this.player.setAudioFromBuffer(array.buffer));
+      }
+    });
   }
 }
 
