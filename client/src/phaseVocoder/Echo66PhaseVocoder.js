@@ -3,7 +3,7 @@ import CBuffer from 'CBuffer'
 
 // forked from: https://github.com/echo66/echo66.github.io/tree/master/demos/PhaseVocoder.js
 
-// TODO: handle mono 
+// TODO: handle mono? 
 export default function BufferedPV(frameSize) {
 
   var _frameSize = frameSize || 4096;

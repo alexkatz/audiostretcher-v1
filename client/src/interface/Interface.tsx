@@ -7,6 +7,9 @@ import { Style } from '../shared/styles';
 import { VerticalSlider } from './VerticalSlider';
 import { HorizontalSlider } from './HorizontalSlider';
 import { ECHILD } from 'constants';
+import Popover, { ArrowContainer } from 'react-tiny-popover';
+import { BusyIndicator } from '../shared/busyIndicator';
+import { YoutubeInput } from './YoutubeInput';
 
 const DEFAULT_GAIN = 0.75;
 const DEFAULT_PAN = 0;
@@ -16,6 +19,8 @@ interface InterfaceProps {
   height: number;
   audioBuffer?: AudioBuffer;
   player: Player;
+  onLoadUrl?(urlText: string);
+  isGettingAudio: boolean;
 }
 
 interface InterfaceState {
@@ -24,11 +29,7 @@ interface InterfaceState {
   pan: number;
   urlText: string;
   isInputFocused: boolean;
-}
-
-interface ReadResult {
-  done: boolean;
-  value?: any;
+  isGetAudioPopoverOpen: boolean;
 }
 
 class Interface extends React.Component<InterfaceProps, InterfaceState> {
@@ -40,12 +41,13 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
       gain: DEFAULT_GAIN,
       urlText: '',
       isInputFocused: false,
+      isGetAudioPopoverOpen: false,
     };
   }
 
   public render() {
-    const { width, height, audioBuffer, player } = this.props;
-    const { alpha, gain, pan, urlText, isInputFocused } = this.state;
+    const { width, height, audioBuffer, player, onLoadUrl, isGettingAudio } = this.props;
+    const { alpha, gain, pan, urlText, isInputFocused, isGetAudioPopoverOpen } = this.state;
     const alphaSliderPercent = Constant.GET_SLIDER_PERCENT_FROM_ALPHA(alpha);
     const halfHeight = height * 0.5;
     const halfHeightThird = halfHeight / 3;
@@ -191,48 +193,22 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
                 }}
                 children={'youtube url'}
               />
-              <div // input and button container
-                style={{
+              <YoutubeInput
+                isPopoverOpen={isGetAudioPopoverOpen}
+                isBusy={isGettingAudio}
+                containerStyle={{
                   display: 'flex',
                   height: halfHeightThird,
                   ...Style.INNER_BLUE_BOX_SHADOW,
                   ...Style.BORDER_RADIUS,
                 }}
-              >
-                <input
-                  style={{
-                    minHeight: Constant.SLIDER_WIDTH,
-                    outline: 'none',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    padding: Constant.PADDING,
-                    fontSize: Constant.FONT_SIZE.LARGE,
-                    color: Color.MID_BLUE,
-                    flex: '1 1 auto',
-                  }}
-                  type={'text'}
-                  value={urlText}
-                  onChange={e => this.setState({ urlText: e.target.value })}
-                  onFocus={() => this.setState({ isInputFocused: true })}
-                  onBlur={() => this.setState({ isInputFocused: false })}
-                />
-                <button
-                  onClick={() => this.onLoadUrl(urlText)}
-                  style={{
-                    fontSize: Constant.FONT_SIZE.REGULAR,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    outline: 'none',
-                    color: Color.LIGHT_BLUE,
-                    backgroundColor: Color.MID_BLUE,
-                    ...Style.BORDER_RADIUS,
-                    cursor: 'pointer',
-                  }}
-                  children={'get audio'}
-                />
-              </div>
+                value={urlText}
+                onChange={e => this.setState({ urlText: e.target.value })}
+                onClick={e => e.stopPropagation()}
+                onFocus={() => this.setState({ isInputFocused: true })}
+                onBlur={() => this.setState({ isInputFocused: false })}
+                onLoadUrl={onLoadUrl}
+              />
             </div>
           </div>
         </div>
@@ -264,32 +240,6 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
     this.setState({ pan: Constant.GET_PAN_FROM_PERCENT(newPanPercent) });
   }
 
-  private onLoadUrl = async (url: string) => {
-    const { player } = this.props;
-    const result = await Constant.GET_YOUTUBE_AUDIO(url);
-    if (result) {
-      const reader = result.getReader();
-      let readResult: ReadResult = { done: false };
-      const arrays: Uint8Array[] = [];
-      let length = 0;
-      while (!readResult.done) {
-        readResult = await reader.read();
-        if (!readResult.done) {
-          const array = readResult.value;
-          arrays.push(array);
-          length += array.length;
-        }
-      }
-
-      const array = new Uint8Array(length);
-      arrays.reduce((length, arr) => {
-        array.set(arr, length);
-        return length += arr.length;
-      }, 0);
-
-      player.setAudioFromBuffer(array.buffer);
-    }
-  }
 }
 
 export { Interface };
