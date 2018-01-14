@@ -74,6 +74,7 @@ class Home extends React.Component<any, HomeState> {
                     audioBuffer={audioBuffer}
                     player={this.player}
                     onLoadUrl={this.onLoadUrl}
+                    isGettingAudio={isGettingAudio}
                   />
                 )}
               </Dropzone>

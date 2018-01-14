@@ -86,4 +86,5 @@ export const Constant = {
     SLIDER_TRACK_SIZE: 2,
     SLIDER_SELECTED_TRACK_SIZE: 4,
     BORDER_RADIUS: 10,
+    DEFAULT_INPUT_HEIGHT: 100,
 };

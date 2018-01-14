@@ -4,6 +4,7 @@ import { Style } from '../shared/styles';
 import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
 import { BusyIndicator } from '../shared/busyIndicator';
+import { YoutubeInput } from '../interface/YoutubeInput';
 
 interface WelcomeProps {
   width: number;
@@ -75,82 +76,20 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
             }}
             children={'youtube url'}
           />
-          <Popover
-            isOpen={isPopoverOpen}
-            content={({ targetRect, popoverRect }) => (
-              <ArrowContainer
-                arrowColor={Color.MID_BLUE}
-                position={'top'}
-                targetRect={targetRect}
-                popoverRect={popoverRect}
-              >
-                <div
-                  style={{
-                    padding: Constant.PADDING,
-                    backgroundColor: Color.MID_BLUE,
-                    color: Color.LIGHT_BLUE,
-                    ...Style.BORDER_RADIUS,
-                  }}
-                >
-                  make sure this link is to a youtube video!
-                </div>
-              </ArrowContainer>
-            )}
-          >
-            <div // input and button container
-              style={{
-                display: 'flex',
-                height: 100,
-                ...Style.INNER_BLUE_BOX_SHADOW,
-                ...Style.BORDER_RADIUS,
-              }}
-            >
-              <input
-                style={{
-                  minHeight: Constant.SLIDER_WIDTH,
-                  outline: 'none',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  padding: Constant.PADDING,
-                  fontSize: Constant.FONT_SIZE.LARGE,
-                  color: Color.MID_BLUE,
-                  flex: '1 1 auto',
-                }}
-                type={'text'}
-                value={urlText}
-                onChange={e => this.setState({ urlText: e.target.value })}
-                onClick={e => e.stopPropagation()}
-              />
-              <button
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!isBusy) {
-                    onLoadUrl(urlText);
-                  }
-                }}
-                style={{
-                  fontSize: Constant.FONT_SIZE.REGULAR,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: 'none',
-                  outline: 'none',
-                  color: Color.LIGHT_BLUE,
-                  backgroundColor: Color.MID_BLUE,
-                  ...Style.BORDER_RADIUS,
-                  cursor: isBusy ? 'cursor' : 'pointer',
-                  width: 120,
-                }}
-              >
-                {isBusy && (
-                  <BusyIndicator />
-                )}
-                {!isBusy && (
-                  <span children={'get audio'} />
-                )}
-              </button>
-            </div>
-          </Popover>
+          <YoutubeInput
+            isPopoverOpen={isPopoverOpen}
+            containerStyle={{
+              display: 'flex',
+              height: 100,
+              ...Style.INNER_BLUE_BOX_SHADOW,
+              ...Style.BORDER_RADIUS,
+            }}
+            value={urlText}
+            onChange={e => this.setState({ urlText: e.target.value })}
+            onClick={e => e.stopPropagation()}
+            onLoadUrl={onLoadUrl}
+            isBusy={isBusy}
+          />
         </div>
         <div
           style={{
