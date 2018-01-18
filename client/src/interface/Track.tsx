@@ -62,6 +62,7 @@ interface TrackState {
   waveformRects: WaveformRect[];
   mouseDownX: number;
   isAltKeyDown: boolean;
+  isTutorialOpen: boolean;
 }
 
 class Track extends React.Component<TrackProps, Partial<TrackState>> {
@@ -138,6 +139,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
 
   public render() {
     const { width, height, style } = this.props;
+    const { isTutorialOpen } = this.state;
     const { playbackText, loopStartText, loopEndText } = this.getTimeIndicatorValues();
     const { startPercent, endPercent } = this.getRelativeLocators();
     const loopStartPixel = width * startPercent;
@@ -214,11 +216,12 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
           />
         </div>
         <Popover
-          isOpen={true}
+          isOpen={isTutorialOpen}
           windowBorderPadding={Constant.PADDING * 1.5}
           containerStyle={{
             filter: 'drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.2))',
           }}
+          onClickOutside={() => this.setState({ isTutorialOpen: false })}
           content={arrowProps => (
             <ArrowContainer
               {...arrowProps}
@@ -270,6 +273,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
               backgroundColor: Color.DARK_BLUE,
               cursor: 'pointer',
             }}
+            onClick={() => this.setState({ isTutorialOpen: !isTutorialOpen })}
           />
         </Popover>
         <div

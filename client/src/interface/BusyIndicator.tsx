@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Radium from 'radium';
-import { Color } from './colors';
+import { Color } from '../shared/colors';
 
 const orbStyle: React.CSSProperties = {
   width: 18,

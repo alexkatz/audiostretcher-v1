@@ -3,7 +3,7 @@ import Popover, { ArrowContainer } from 'react-tiny-popover';
 import { Style } from '../shared/styles';
 import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
-import { BusyIndicator } from '../shared/busyIndicator';
+import { BusyIndicator } from '../interface/BusyIndicator';
 import { YoutubeInput } from '../interface/YoutubeInput';
 
 interface WelcomeProps {

@@ -8,7 +8,7 @@ import { VerticalSlider } from './VerticalSlider';
 import { HorizontalSlider } from './HorizontalSlider';
 import { ECHILD } from 'constants';
 import Popover, { ArrowContainer } from 'react-tiny-popover';
-import { BusyIndicator } from '../shared/busyIndicator';
+import { BusyIndicator } from './BusyIndicator';
 import { YoutubeInput } from './YoutubeInput';
 
 const DEFAULT_GAIN = 0.75;

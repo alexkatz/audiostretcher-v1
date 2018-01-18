@@ -3,7 +3,7 @@ import Popover, { ArrowContainer } from 'react-tiny-popover';
 import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
 import { Style } from '../shared/styles';
-import { BusyIndicator } from '../shared/busyIndicator';
+import { BusyIndicator } from './busyIndicator';
 
 interface YoutubeInputProps {
   isBusy?: boolean;
