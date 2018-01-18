@@ -3,6 +3,10 @@ import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
 import { Player } from './player';
 import { Style } from '../shared/styles';
+import { TutorialIcon } from './TutorialIcon';
+import Popover, { ArrowContainer } from 'react-tiny-popover';
+import { BulletPoint } from './BulletPoint';
+import { KeySnippet } from './KeySnippet';
 
 const PLAYBACK_BAR_WIDTH = 5;
 const HEADER_HEIGHT = 70;
@@ -163,6 +167,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
             fontSize: Constant.FONT_SIZE.REGULAR,
             color: Color.DARK_BLUE,
             zIndex: 1,
+            pointerEvents: 'none',
             ...Style.NO_SELECT,
           }}
           children={'audio stretcher'}
@@ -178,11 +183,95 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
             fontSize: Constant.FONT_SIZE.REGULAR,
             color: Color.MID_BLUE,
             zIndex: 1,
+            pointerEvents: 'none',
             ...Style.NO_SELECT,
             clipPath,
           }}
           children={'audio stretcher'}
         />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            zIndex: 1,
+            pointerEvents: 'none',
+            ...Style.NO_SELECT,
+            clipPath,
+          }}
+        >
+          <TutorialIcon
+            style={{
+              color: Color.DARK_BLUE,
+              backgroundColor: Color.LIGHT_BLUE,
+              marginRight: Constant.PADDING,
+              marginTop: Constant.PADDING,
+            }}
+          />
+        </div>
+        <Popover
+          isOpen={true}
+          windowBorderPadding={Constant.PADDING * 1.5}
+          containerStyle={{
+            filter: 'drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.2))',
+          }}
+          content={arrowProps => (
+            <ArrowContainer
+              {...arrowProps}
+              arrowColor={Color.LIGHT_BLUE}
+              arrowSize={8}
+            >
+              <div
+                style={{
+                  backgroundColor: Color.LIGHT_BLUE,
+                  color: Color.DARK_BLUE,
+                  borderRadius: Constant.BORDER_RADIUS,
+                  padding: Constant.PADDING,
+                }}
+              >
+                <BulletPoint>
+                  <KeySnippet>CLICK</KeySnippet> and drag along your waveform to create a loop segment
+                </BulletPoint>
+                <BulletPoint>
+                  press <KeySnippet>SPACEBAR</KeySnippet> to start or restart playback
+                </BulletPoint>
+                <BulletPoint>
+                  press <KeySnippet>SHIFT-SPACEBAR</KeySnippet> to stop playback
+                </BulletPoint>
+                <BulletPoint>
+                  hold <KeySnippet>SHIFT</KeySnippet> while dragging to modify your loop segment
+                </BulletPoint>
+                <BulletPoint>
+                  press <KeySnippet>Z</KeySnippet> to zoom in on your loop segment, as often as you'd like
+                </BulletPoint>
+                <BulletPoint>
+                  press <KeySnippet>SHIFT-Z</KeySnippet> to zoom completely out
+                </BulletPoint>
+                <BulletPoint>
+                  <KeySnippet>OPTION-CLICK</KeySnippet> on a slider to reset it to its initial value
+                </BulletPoint>
+                <BulletPoint>
+                  hold <KeySnippet>SHIFT</KeySnippet> while dragging a slider to quantize its value as you slide
+                </BulletPoint>
+              </div>
+            </ArrowContainer>
+          )}
+        >
+          <TutorialIcon
+            style={{
+              position: 'absolute',
+              right: Constant.PADDING,
+              top: Constant.PADDING,
+              color: Color.LIGHT_BLUE,
+              backgroundColor: Color.DARK_BLUE,
+              cursor: 'pointer',
+            }}
+          />
+        </Popover>
         <div
           style={{
             position: 'absolute',
@@ -405,7 +494,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
 
   private onKeyUp = (e: KeyboardEvent) => {
     if (this.props.userInteractionEnabled) {
-      
+
     }
   }
 
