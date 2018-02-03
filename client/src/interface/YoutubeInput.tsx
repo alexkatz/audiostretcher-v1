@@ -76,6 +76,7 @@ const YoutubeInput = ({
           onClick={onClick}
           onFocus={onFocus}
           onBlur={onBlur}
+          onKeyDown={e => e.keyCode === 13 && onLoadUrl(value)}
         />
         <button
           onClick={e => {

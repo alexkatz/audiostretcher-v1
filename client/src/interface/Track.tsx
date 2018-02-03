@@ -10,6 +10,7 @@ import { KeySnippet } from './KeySnippet';
 
 const PLAYBACK_BAR_WIDTH = 5;
 const HEADER_HEIGHT = 70;
+const WAVEFORM_RESOLUTION_FACTOR = 4;
 const CANVAS_HEIGHT_PERCENT = 0.7;
 const MIN_LOOP_PERCENT = 0.001;
 const DEFAULT_LOCATORS: Locators = { startPercent: 0, endPercent: 1 };
@@ -237,7 +238,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
                 }}
               >
                 <BulletPoint>
-                  <KeySnippet>CLICK</KeySnippet> and drag along your waveform to create a loop segment
+                  <KeySnippet>CLICK</KeySnippet> and <KeySnippet>drag</KeySnippet> along your waveform to create a loop segment
                 </BulletPoint>
                 <BulletPoint>
                   press <KeySnippet>SPACEBAR</KeySnippet> to start or restart playback
@@ -249,7 +250,7 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
                   hold <KeySnippet>SHIFT</KeySnippet> while dragging to modify your loop segment
                 </BulletPoint>
                 <BulletPoint>
-                  press <KeySnippet>Z</KeySnippet> to zoom in on your loop segment, as often as you'd like
+                  press <KeySnippet>Z</KeySnippet> to zoom in on your current loop segment
                 </BulletPoint>
                 <BulletPoint>
                   press <KeySnippet>SHIFT-Z</KeySnippet> to zoom completely out
@@ -604,7 +605,6 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   private getWaveformRects = (data?: { leftChannelData: Float32Array; rightChannelData: Float32Array; lowPeak: number; highPeak: number; }): WaveformRect[] => {
     const { lowPeak, highPeak, leftChannelData, rightChannelData } = (data || this.state);
     const { width, height } = this.props;
-    const WAVEFORM_RESOLUTION_FACTOR = 1;
     const pixelCount = width / WAVEFORM_RESOLUTION_FACTOR;
     const peak = Math.max(Math.abs(lowPeak), highPeak);
     const NORMALIZE_FACTOR = (rightChannelData ? height * 0.25 : height * 0.5) / peak;

@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A simple vscode starter repo for experimentation or quick coding/debugging in Typescript with a couple of nice features.",
   "main": "src/index.ts",
+  "engines": {
+    "node": "8.8.0",
+    "yarn": "1.2.1"
+  },
   "license": "MIT",
   "scripts": {
     "build": "tsc --project tsconfig.json && cd ../client && yarn build",
