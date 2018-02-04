@@ -1,6 +1,7 @@
 **/.vscode
 **/node_modules/
 **/dist/
+public/
 **/.awcache/
 **/npm-debug.log
 **/.DS_Store

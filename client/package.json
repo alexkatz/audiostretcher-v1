@@ -23,7 +23,7 @@
   "scripts": {
     "start": "webpack-dev-server --inline --hot",
     "build": "webpack --env=production && yarn copy-files-to-server",
-    "copy-files-to-server": "cp dist/* ../public"
+    "copy-files-to-server": "mkdir -p ../public && cp dist/* ../public"
   },
   "dependencies": {
     "CBuffer": "^2.0.0",

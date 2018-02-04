@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "A simple vscode starter repo for experimentation or quick coding/debugging in Typescript with a couple of nice features.",
   "license": "MIT",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc --project tsconfig.json && cd client && yarn build",
     "clear": "rm -r dist",
     "lint-fix": "tslint -c tslint.json -p tsconfig.json --type-check --fix",
     "lint": "tslint -c tslint.json -p tsconfig.json --type-check --format codeFrame --force",
     "watch": "tsc --watch --project tsconfig.json",
-    "watch-lint": "tsc-watch --project tsconfig.json --onSuccess \"yarn lint\""
+    "watch-lint": "tsc-watch --project tsconfig.json --onSuccess \"yarn lint\"",
+    "postinstall": "yarn build"
   },
   "devDependencies": {
     "@types/cors": "^2.8.3",
