@@ -22,4 +22,5 @@ app.get('/audio', (req, res) => {
 
 app.use('/', express.static(path.join(__dirname, '../public')));
 
-app.listen(3001, () => console.log('server listening on 3001.'));
+const port = process.env.PORT || 3001;
+app.listen(port, () => console.log(`server listening on ${port}.`));
