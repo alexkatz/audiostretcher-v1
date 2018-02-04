@@ -4,3 +4,4 @@
 **/.awcache/
 **/npm-debug.log
 **/.DS_Store
+*.code-workspace

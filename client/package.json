@@ -1,7 +1,6 @@
 {
   "name": "loopr-app",
   "version": "0.0.1",
-  "main": "dist/index.js",
   "license": "MIT",
   "devDependencies": {
     "@types/radium": "^0.18.23",
@@ -23,8 +22,8 @@
   },
   "scripts": {
     "start": "webpack-dev-server --inline --hot",
-    "build": "webpack && yarn copy-files-to-server",
-    "copy-files-to-server": "cp dist/* ../server/public"
+    "build": "webpack --env=production && yarn copy-files-to-server",
+    "copy-files-to-server": "cp dist/* ../public"
   },
   "dependencies": {
     "CBuffer": "^2.0.0",

@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlStringReplace = require('html-string-replace-webpack-plugin');
-const config = {
+const config = env => ({
     entry: {
         app: ['./src/index.tsx'],
     },
@@ -31,10 +31,12 @@ const config = {
                 },
             ]
         }),
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('production')
-        }),
-        new webpack.optimize.UglifyJsPlugin(),
+        ...(env === 'production' ? [
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV': JSON.stringify('production')
+            }),
+            new webpack.optimize.UglifyJsPlugin(),
+        ] : []),
     ],
     module: {
         rules: [
@@ -42,6 +44,6 @@ const config = {
             { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' }
         ],
     },
-};
+});
 
 module.exports = config;
