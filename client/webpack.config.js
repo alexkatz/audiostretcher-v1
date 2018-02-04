@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlStringReplace = require('html-string-replace-webpack-plugin');
@@ -29,7 +30,11 @@ const config = {
                     replacement: () => 'src="index.js"',
                 },
             ]
-        })
+        }),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('production')
+        }),
+        new webpack.optimize.UglifyJsPlugin(),
     ],
     module: {
         rules: [

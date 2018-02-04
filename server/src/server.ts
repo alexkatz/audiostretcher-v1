@@ -7,11 +7,10 @@ const app = express();
 
 app.use(cors({ origin: 'http://localhost:8080' }));
 
-app.get('/audio', (req, res, next) => {
+app.get('/audio', (req, res) => {
   try {
-    const { url } = req.query;
     res.contentType('audio/mp4');
-    ytdl(url, {
+    ytdl(req.query.url, { 
       filter: 'audioonly',
     }).pipe(res);
   } catch (error) {

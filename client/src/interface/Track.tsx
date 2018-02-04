@@ -10,7 +10,7 @@ import { KeySnippet } from './KeySnippet';
 
 const PLAYBACK_BAR_WIDTH = 5;
 const HEADER_HEIGHT = 70;
-const WAVEFORM_RESOLUTION_FACTOR = 4;
+const WAVEFORM_RESOLUTION_FACTOR = 2;
 const CANVAS_HEIGHT_PERCENT = 0.7;
 const MIN_LOOP_PERCENT = 0.001;
 const DEFAULT_LOCATORS: Locators = { startPercent: 0, endPercent: 1 };
@@ -128,12 +128,14 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
 
   public componentDidUpdate(prevProps: TrackProps, prevState: TrackState) {
     if (this.state.zoomLocators !== prevState.zoomLocators || this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
+      console.log('getting waveform rects again');
       this.setState({ waveformRects: this.getWaveformRects() }, this.draw);
       return;
     }
 
     if (!Constant.LOCATORS_ARE_EQUAL(this.state.loopLocators, prevState.loopLocators)) {
       this.props.player.setLoop(this.getTrueLocators(this.getRelativeLocators(this.state.loopLocators)));
+      console.log('setting loop and drawing');
       this.draw();
     }
   }
@@ -734,7 +736,6 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
   private animatePlayback: FrameRequestCallback = () => {
     this.updateIntraFrameInfo();
     this.draw();
-    this.forceUpdate();
     if (this.isPlaying) {
       window.requestAnimationFrame(this.animatePlayback);
     }
