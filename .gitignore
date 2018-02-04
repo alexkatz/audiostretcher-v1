@@ -1,6 +1,6 @@
 **/.vscode
 **/node_modules/
-**/dist/
+client/dist/
 public/
 **/.awcache/
 **/npm-debug.log
