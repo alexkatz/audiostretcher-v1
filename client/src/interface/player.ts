@@ -83,78 +83,79 @@ export class Player {
     return (this.loopEndPercent || 1) * this.internalBuffer.duration;
   }
 
-  public setBuffer = async (arrayBuffer: ArrayBuffer) => {
+  public setBuffer = (arrayBuffer: ArrayBuffer) => {
     if (this.playbackStartedAt !== null) { this.stop(); }
     if (this.audioContext !== null) { this.audioContext.close(); }
     this.audioContext = this.getNewAudioContext();
-    const buffer = await this.audioContext.decodeAudioData(arrayBuffer);
-    this.internalBuffer = buffer;
-    this.audioBufferChangedListeners.forEach(listener => listener(buffer));
-    this.phaseVocoder = new BufferedPV(FRAME_SIZE);
-    this.phaseVocoder.set_audio_buffer(this.internalBuffer);
-    this.phaseVocoder.alpha = 1;
-    this.phaseVocoder.position = 0;
+    this.audioContext.decodeAudioData(arrayBuffer, buffer => {
+      this.internalBuffer = buffer;
+      this.audioBufferChangedListeners.forEach(listener => listener(buffer));
+      this.phaseVocoder = new BufferedPV(FRAME_SIZE);
+      this.phaseVocoder.set_audio_buffer(this.internalBuffer);
+      this.phaseVocoder.alpha = 1;
+      this.phaseVocoder.position = 0;
 
-    // TODO: handle mono...
+      // TODO: handle mono...
 
-    // audio source
-    this.scriptNode = this.audioContext.createScriptProcessor(4096, this.internalBuffer.numberOfChannels, this.internalBuffer.numberOfChannels);
+      // audio source
+      this.scriptNode = this.audioContext.createScriptProcessor(4096, this.internalBuffer.numberOfChannels, this.internalBuffer.numberOfChannels);
 
-    // output gain
-    this.outputGainNode = this.audioContext.createGain();
+      // output gain
+      this.outputGainNode = this.audioContext.createGain();
 
-    // input splitter
-    this.inputSplitterNode = this.audioContext.createChannelSplitter(2);
+      // input splitter
+      this.inputSplitterNode = this.audioContext.createChannelSplitter(2);
 
-    // output merger
-    this.outputMergerNode = this.audioContext.createChannelMerger(2);
+      // output merger
+      this.outputMergerNode = this.audioContext.createChannelMerger(2);
 
-    // left and right gains
-    this.leftLGainNode = this.audioContext.createGain();
-    this.leftRGainNode = this.audioContext.createGain();
-    this.rightLGainNode = this.audioContext.createGain();
-    this.rightRGainNode = this.audioContext.createGain();
-    this.leftLGainNode.gain.value = 1;
-    this.leftRGainNode.gain.value = 0;
-    this.rightLGainNode.gain.value = 0;
-    this.rightRGainNode.gain.value = 1;
+      // left and right gains
+      this.leftLGainNode = this.audioContext.createGain();
+      this.leftRGainNode = this.audioContext.createGain();
+      this.rightLGainNode = this.audioContext.createGain();
+      this.rightRGainNode = this.audioContext.createGain();
+      this.leftLGainNode.gain.value = 1;
+      this.leftRGainNode.gain.value = 0;
+      this.rightLGainNode.gain.value = 0;
+      this.rightRGainNode.gain.value = 1;
 
-    // okay, now for signal routing...
+      // okay, now for signal routing...
 
-    // feed stereo source to inputSplitter
-    this.scriptNode.connect(this.inputSplitterNode);
+      // feed stereo source to inputSplitter
+      this.scriptNode.connect(this.inputSplitterNode);
 
-    // feed inputSplitter to all gains
-    this.inputSplitterNode.connect(this.leftLGainNode, 0, 0);
-    this.inputSplitterNode.connect(this.leftRGainNode, 1, 0);
-    this.inputSplitterNode.connect(this.rightLGainNode, 0, 0);
-    this.inputSplitterNode.connect(this.rightRGainNode, 1, 0);
+      // feed inputSplitter to all gains
+      this.inputSplitterNode.connect(this.leftLGainNode, 0, 0);
+      this.inputSplitterNode.connect(this.leftRGainNode, 1, 0);
+      this.inputSplitterNode.connect(this.rightLGainNode, 0, 0);
+      this.inputSplitterNode.connect(this.rightRGainNode, 1, 0);
 
-    // feed gains to outputMerger channel
-    this.leftLGainNode.connect(this.outputMergerNode, 0, 0);
-    this.leftRGainNode.connect(this.outputMergerNode, 0, 0);
-    this.rightLGainNode.connect(this.outputMergerNode, 0, 1);
-    this.rightRGainNode.connect(this.outputMergerNode, 0, 1);
+      // feed gains to outputMerger channel
+      this.leftLGainNode.connect(this.outputMergerNode, 0, 0);
+      this.leftRGainNode.connect(this.outputMergerNode, 0, 0);
+      this.rightLGainNode.connect(this.outputMergerNode, 0, 1);
+      this.rightRGainNode.connect(this.outputMergerNode, 0, 1);
 
-    // feed outputMerger to outputGain
-    this.outputMergerNode.connect(this.outputGainNode);
+      // feed outputMerger to outputGain
+      this.outputMergerNode.connect(this.outputGainNode);
 
-    // feed outputGain to dest
-    this.outputGainNode.connect(this.audioContext.destination);
+      // feed outputGain to dest
+      this.outputGainNode.connect(this.audioContext.destination);
 
-    this.scriptNode.onaudioprocess = this.onAudioProcess;
+      this.scriptNode.onaudioprocess = this.onAudioProcess;
+    });
   }
 
   public setAudioFromFile = (file: File) => {
     const fileReader = new FileReader();
-    fileReader.onloadend = async () => this.setBuffer(fileReader.result);
+    fileReader.onloadend = () => this.setBuffer(fileReader.result);
     fileReader.readAsArrayBuffer(file);
   }
 
-  public setAudioFromBuffer = async (buffer: ArrayBuffer) => {
+  public setAudioFromBuffer = (buffer: ArrayBuffer) => {
     if (this.audioContext !== null) { this.audioContext.close(); }
     this.audioContext = this.getNewAudioContext();
-    return this.setBuffer(buffer);
+    this.setBuffer(buffer);
   }
 
   public onAudioBufferChanged = (listener: AudioBufferChangedHandler): RemoveListener => {

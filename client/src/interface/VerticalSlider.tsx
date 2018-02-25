@@ -19,6 +19,10 @@ class VerticalSlider extends React.Component<VerticalSliderProps> {
     defaultValue: 0.75,
   };
 
+  public shouldComponentUpdate(nextProps) {
+    return this.props.percent !== nextProps.percent;
+  }
+
   public componentDidMount() {
     window.addEventListener('mousemove', this.onMouseMove);
     window.addEventListener('mouseup', this.onMouseUp);

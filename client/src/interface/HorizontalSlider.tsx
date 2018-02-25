@@ -31,6 +31,10 @@ class HorizontalSlider extends React.Component<HorizontalSliderProps> {
     window.removeEventListener('mousemove', this.onMouseMove);
     window.removeEventListener('mouseup', this.onMouseUp);
   }
+  
+  public shouldComponentUpdate(nextProps) {
+    return this.props.percent !== nextProps.percent;
+  }
 
   public render() {
     const { style, percent, label, selectedColor, handleColor } = this.props;

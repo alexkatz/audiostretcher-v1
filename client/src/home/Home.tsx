@@ -53,8 +53,8 @@ class Home extends React.Component<any, HomeState> {
               }}
             >
               <Dropzone
+                disabled={audioBuffer != null}
                 onDrop={([file]) => this.player.setAudioFromFile(file)}
-                disableClick={audioBuffer != null}
                 style={{
                   width: '100%',
                   height: '100%',
