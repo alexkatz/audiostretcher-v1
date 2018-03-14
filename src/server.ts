@@ -14,7 +14,6 @@ app.get('/audio', (req, res) => {
       filter: 'audioonly',
     }).pipe(res);
   } catch (error) {
-    console.log('error getting audio', error);
     res.status(500);
     res.send();
   }
