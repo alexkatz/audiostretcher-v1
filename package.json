@@ -14,16 +14,16 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.3",
-    "@types/express": "^4.0.39",
-    "@types/node": "^8.0.19",
+    "@types/express": "^4.11.1",
+    "@types/node": "^9.4.7",
     "tsc": "^1.20150623.0",
-    "tsc-watch": "^1.0.8",
-    "tslint": "^5.8.0",
-    "typescript": "^2.6.1"
+    "tsc-watch": "^1.0.17",
+    "tslint": "^5.9.1",
+    "typescript": "^2.7.2"
   },
   "dependencies": {
     "cors": "^2.8.4",
-    "express": "^4.16.2",
-    "ytdl-core": "^0.18.2"
+    "express": "^4.16.3",
+    "ytdl-core": "^0.20.2"
   }
 }

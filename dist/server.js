@@ -5,20 +5,31 @@ const path = require("path");
 const cors = require("cors");
 const ytdl = require("ytdl-core");
 const app = express();
-app.use(cors({ origin: 'http://localhost:8080' }));
+const contentLengthKey = 'content-length';
+app.use(cors({
+    origin: 'http://localhost:8080',
+    exposedHeaders: ['content-length'],
+}));
 app.get('/audio', (req, res) => {
     try {
         res.contentType('audio/mp4');
-        ytdl(req.query.url, {
+        const result = ytdl(req.query.url, {
             filter: 'audioonly',
-        }).pipe(res);
+            requestOptions: {},
+        })
+            .on('response', response => {
+            res.writeHead(200, { [contentLengthKey]: response.headers[contentLengthKey] });
+            result.pipe(res);
+        })
+            .on('progress', (chunkLength, totalDownloaded, totalDownloadLength) => {
+        });
     }
     catch (error) {
-        console.log('error getting audio', error);
         res.status(500);
         res.send();
     }
 });
 app.use('/', express.static(path.join(__dirname, '../public')));
-app.listen(3001, () => console.log('server listening on 3001.'));
+const port = process.env.PORT || 3001;
+app.listen(port, () => console.log(`server listening on ${port}.`));
 //# sourceMappingURL=server.js.map

@@ -96,7 +96,7 @@ class Home extends React.Component<any, HomeState> {
     this.setState({ isGettingAudio: true }, async () => {
       const result = await Constant.GET_YOUTUBE_AUDIO(url);
       if (result) {
-        const reader = result.getReader();
+        const reader = result.stream.getReader();
         let readResult: ReadResult = { done: false };
         const arrays: Uint8Array[] = [];
         let length = 0;
@@ -107,6 +107,7 @@ class Home extends React.Component<any, HomeState> {
             arrays.push(array);
             length += array.length;
           }
+          console.log('percent: ', (length / result.totalLength) * 100);
         }
 
         const array = new Uint8Array(length);

@@ -33,10 +33,16 @@ const SECONDS_TO_HHMMSSMM = (n: number): string => {
     return `${hours > 0 ? `${hh}:` : ''}${mm}:${ss}:${mmm}`;
 };
 
-const GET_YOUTUBE_AUDIO = async (url: string): Promise<ReadableStream> => {
+const GET_YOUTUBE_AUDIO = async (url: string): Promise<{ stream: ReadableStream, totalLength: number }> => {
+    const CONTENT_LENGTH = 'content-length';
+    const API_BASE_URL = 'http://localhost:3001/audio';
     try {
-        const result = await fetch(`http://localhost:3001/audio?url=${url}`);
-        return result.body;
+        const result = await fetch(`${API_BASE_URL}?url=${url}`);
+        const totalLength = Number(result.headers.get(CONTENT_LENGTH));
+        return {
+            stream: result.body,
+            totalLength,
+        };
     } catch (error) {
         console.log(error);
         return null;
