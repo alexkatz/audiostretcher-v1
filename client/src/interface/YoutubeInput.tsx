@@ -3,10 +3,10 @@ import Popover, { ArrowContainer } from 'react-tiny-popover';
 import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
 import { Style } from '../shared/styles';
-import { BusyIndicator } from './busyIndicator';
+import { FadeAnimate } from './FadeAnimate';
 
 interface YoutubeInputProps {
-  isBusy?: boolean;
+  audioFetchProgress?: number;
   isPopoverOpen?: boolean;
   containerStyle?: React.CSSProperties;
   onLoadUrl?(urlText: string);
@@ -18,7 +18,7 @@ interface YoutubeInputProps {
 }
 
 const YoutubeInput = ({
-  isBusy,
+  audioFetchProgress,
   value,
   onLoadUrl,
   onClick,
@@ -27,7 +27,9 @@ const YoutubeInput = ({
   onBlur,
   onChange,
   isPopoverOpen,
-}: YoutubeInputProps) => (
+}: YoutubeInputProps) => {
+  const isBusy = audioFetchProgress < 1;
+  return (
     <Popover
       isOpen={isPopoverOpen}
       content={({ targetRect, popoverRect }) => (
@@ -100,7 +102,7 @@ const YoutubeInput = ({
           }}
         >
           {isBusy && (
-            <BusyIndicator />
+            <FadeAnimate text={`${(audioFetchProgress * 100).toFixed(2)}%`} />
           )}
           {!isBusy && (
             <span children={'get audio'} />
@@ -109,5 +111,6 @@ const YoutubeInput = ({
       </div>
     </Popover>
   );
+};
 
 export { YoutubeInput };

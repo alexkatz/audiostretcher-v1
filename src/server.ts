@@ -4,28 +4,22 @@ import * as cors from 'cors';
 import ytdl = require('ytdl-core');
 
 const app = express();
-const contentLengthKey = 'content-length';
 
 app.use(cors({
   origin: 'http://localhost:8080',
-  exposedHeaders: ['content-length'],
+  exposedHeaders: ['Content-Length'],
 }));
 
 app.get('/audio', (req, res) => {
   try {
-    res.contentType('audio/mp4');
-    const result = ytdl(req.query.url, {
-      filter: 'audioonly',
-      requestOptions: {
-
-      },
-    })
-      .on('response', response => {
-        res.writeHead(200, { [contentLengthKey]: response.headers[contentLengthKey] });
-        result.pipe(res);
-      })
-      .on('progress', (chunkLength, totalDownloaded, totalDownloadLength) => {
+    const result = ytdl(req.query.url, { filter: 'audioonly' });
+    result.on('response', response => {
+      res.writeHead(200, {
+        ['Content-Length']: response.headers['content-length'],
+        'Content-Type': 'audio/mp4',
       });
+      result.pipe(res);
+    });
   } catch (error) {
     res.status(500);
     res.send();

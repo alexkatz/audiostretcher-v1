@@ -9,7 +9,7 @@ import { YoutubeInput } from '../interface/YoutubeInput';
 interface WelcomeProps {
   width: number;
   onLoadUrl?(urlText: string);
-  isBusy?: boolean;
+  audioFetchProgress: number;
 }
 
 interface WelcomeState {
@@ -33,7 +33,7 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
   }
 
   public render() {
-    const { width, onLoadUrl, isBusy } = this.props;
+    const { width, onLoadUrl, audioFetchProgress } = this.props;
     const { urlText, isPopoverOpen } = this.state;
     return (
       <div
@@ -88,7 +88,7 @@ class Welcome extends React.Component<WelcomeProps, WelcomeState> {
             onChange={e => this.setState({ urlText: e.target.value })}
             onClick={e => e.stopPropagation()}
             onLoadUrl={onLoadUrl}
-            isBusy={isBusy}
+            audioFetchProgress={audioFetchProgress}
           />
         </div>
         <div

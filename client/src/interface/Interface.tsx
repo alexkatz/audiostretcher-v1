@@ -20,7 +20,7 @@ interface InterfaceProps {
   audioBuffer?: AudioBuffer;
   player: Player;
   onLoadUrl?(urlText: string);
-  isGettingAudio: boolean;
+  audioFetchProgress: number;
 }
 
 interface InterfaceState {
@@ -46,7 +46,7 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
   }
 
   public render() {
-    const { width, height, audioBuffer, player, onLoadUrl, isGettingAudio } = this.props;
+    const { width, height, audioBuffer, player, onLoadUrl, audioFetchProgress } = this.props;
     const { alpha, gain, pan, urlText, isInputFocused, isGetAudioPopoverOpen } = this.state;
     const alphaSliderPercent = Constant.GET_SLIDER_PERCENT_FROM_ALPHA(alpha);
     const halfHeight = height * 0.5;
@@ -195,7 +195,7 @@ class Interface extends React.Component<InterfaceProps, InterfaceState> {
               />
               <YoutubeInput
                 isPopoverOpen={isGetAudioPopoverOpen}
-                isBusy={isGettingAudio}
+                audioFetchProgress={audioFetchProgress}
                 containerStyle={{
                   display: 'flex',
                   height: halfHeightThird,

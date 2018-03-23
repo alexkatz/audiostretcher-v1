@@ -1,5 +1,7 @@
 import { Locators } from '../interface/Track';
 
+const API_BASE_URL = 'http://localhost:3001/audio';
+
 const SLIDER_WIDTH = 75;
 const CANVAS_HEIGHT_PERCENT = 0.7;
 const MIN_ALPHA = 0.5;
@@ -34,11 +36,9 @@ const SECONDS_TO_HHMMSSMM = (n: number): string => {
 };
 
 const GET_YOUTUBE_AUDIO = async (url: string): Promise<{ stream: ReadableStream, totalLength: number }> => {
-    const CONTENT_LENGTH = 'content-length';
-    const API_BASE_URL = 'http://localhost:3001/audio';
     try {
         const result = await fetch(`${API_BASE_URL}?url=${url}`);
-        const totalLength = Number(result.headers.get(CONTENT_LENGTH));
+        const totalLength = Number(result.headers.get('Content-Length'));
         return {
             stream: result.body,
             totalLength,

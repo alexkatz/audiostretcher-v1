@@ -12,7 +12,7 @@ const Dropzone = require('react-dropzone').default as React.ComponentType<Dropzo
 
 interface HomeState {
   audioBuffer: AudioBuffer;
-  isGettingAudio: boolean;
+  audioFetchProgress: number;
 }
 
 interface ReadResult {
@@ -26,7 +26,10 @@ class Home extends React.Component<any, HomeState> {
 
   constructor(props: any) {
     super(props);
-    this.state = { audioBuffer: null, isGettingAudio: false };
+    this.state = {
+      audioBuffer: null,
+      audioFetchProgress: 1,
+    };
   }
 
   public componentWillMount() {
@@ -40,7 +43,7 @@ class Home extends React.Component<any, HomeState> {
   }
 
   public render() {
-    const { audioBuffer, isGettingAudio } = this.state;
+    const { audioBuffer, audioFetchProgress } = this.state;
     return (
       <AutoSizer>
         {({ width, height }) => (
@@ -64,7 +67,7 @@ class Home extends React.Component<any, HomeState> {
                   <Welcome
                     width={width}
                     onLoadUrl={this.onLoadUrl}
-                    isBusy={isGettingAudio}
+                    audioFetchProgress={audioFetchProgress}
                   />
                 )}
                 {audioBuffer && (
@@ -74,7 +77,7 @@ class Home extends React.Component<any, HomeState> {
                     audioBuffer={audioBuffer}
                     player={this.player}
                     onLoadUrl={this.onLoadUrl}
-                    isGettingAudio={isGettingAudio}
+                    audioFetchProgress={audioFetchProgress}
                   />
                 )}
               </Dropzone>
@@ -93,30 +96,29 @@ class Home extends React.Component<any, HomeState> {
       return;
     }
 
-    this.setState({ isGettingAudio: true }, async () => {
+    this.setState({ audioFetchProgress: 0 }, async () => {
       const result = await Constant.GET_YOUTUBE_AUDIO(url);
       if (result) {
         const reader = result.stream.getReader();
-        let readResult: ReadResult = { done: false };
-        const arrays: Uint8Array[] = [];
-        let length = 0;
-        while (!readResult.done) {
-          readResult = await reader.read();
-          if (!readResult.done) {
+        const readChunksRecursively = async (arrays: Uint8Array[], length: number) => {
+          const readResult = await reader.read();
+          if (readResult.done) {
+            const array = new Uint8Array(length);
+            arrays.reduce((length, arr) => {
+              array.set(arr, length);
+              return length += arr.length;
+            }, 0);
+            this.setState({ audioFetchProgress: 1 }, () => this.player.setAudioFromBuffer(array.buffer));
+          } else {
             const array = readResult.value;
             arrays.push(array);
             length += array.length;
+            const audioFetchProgress = length / result.totalLength;
+            this.setState({ audioFetchProgress }, () => readChunksRecursively(arrays, length));
           }
-          console.log('percent: ', (length / result.totalLength) * 100);
-        }
-
-        const array = new Uint8Array(length);
-        arrays.reduce((length, arr) => {
-          array.set(arr, length);
-          return length += arr.length;
-        }, 0);
-
-        this.setState({ isGettingAudio: false }, () => this.player.setAudioFromBuffer(array.buffer));
+        };
+        
+        readChunksRecursively([], 0);
       }
     });
   }
