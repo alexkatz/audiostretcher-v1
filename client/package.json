@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --mode=development --inline --hot",
-    "build": "webpack --env=production && yarn copy-files-to-server",
+    "build": "webpack --mode=production && yarn copy-files-to-server",
     "copy-files-to-server": "mkdir -p ../public && cp dist/* ../public"
   },
   "devDependencies": {
