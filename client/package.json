@@ -1,7 +1,16 @@
 {
-  "name": "loopr-app",
+  "name": "audiostretcher-react",
   "version": "0.0.1",
   "license": "MIT",
+  "engines": {
+    "yarn": "1.7.0",
+    "node": "10.4.1"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --mode=development --inline --hot",
+    "build": "webpack --env=production && yarn copy-files-to-server",
+    "copy-files-to-server": "mkdir -p ../public && cp dist/* ../public"
+  },
   "devDependencies": {
     "@types/radium": "^0.24.0",
     "@types/react": "^16.0.10",
@@ -21,11 +30,6 @@
     "webpack": "4.12",
     "webpack-cli": "^3.0.7",
     "webpack-dev-server": "3.1.4"
-  },
-  "scripts": {
-    "start": "webpack-dev-server --mode=development --inline --hot",
-    "build": "webpack --env=production && yarn copy-files-to-server",
-    "copy-files-to-server": "mkdir -p ../public && cp dist/* ../public"
   },
   "dependencies": {
     "CBuffer": "^2.0.0",
