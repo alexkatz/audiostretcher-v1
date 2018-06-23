@@ -7,3 +7,4 @@ client/dist/
 **/npm-debug.log
 **/.DS_Store
 *.code-workspace
+**/yarn-error.log
