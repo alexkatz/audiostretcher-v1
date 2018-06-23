@@ -1,6 +1,8 @@
 import { Locators } from '../interface/Track';
 
-const API_BASE_URL = 'http://localhost:3001/audio';
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+    ? 'http://audiostretcher.herokuapp.com/audio'
+    : 'http://localhost:3001/audio';
 
 const SLIDER_WIDTH = 75;
 const CANVAS_HEIGHT_PERCENT = 0.7;

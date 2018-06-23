@@ -27,11 +27,9 @@ const config = env => ({
             pattern: /src=".\/dist\/index.js"/g,
             replacement: () => 'src="index.js"',
         }),
-        ...(env === 'production' ? [
-            new webpack.DefinePlugin({
-                'process.env.NODE_ENV': JSON.stringify('production')
-            }),
-        ] : []),
+        new webpack.EnvironmentPlugin({
+            'NODE_ENV': env === 'production' ? 'production' : 'development',
+        }),
     ],
     module: {
         rules: [
