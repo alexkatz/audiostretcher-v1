@@ -1,11 +1,10 @@
 import * as React from 'react';
-import * as Radium from 'radium';
+import Radium from 'radium';
 
 interface FadeAnimateProps {
   style?: React.CSSProperties;
   text: string;
 }
-
 const FadeAnimate = Radium(({ text, style }: FadeAnimateProps) => (
   <div
     style={{
@@ -17,7 +16,7 @@ const FadeAnimate = Radium(({ text, style }: FadeAnimateProps) => (
         '50%': { opacity: 0.6 },
         '75%': { opacity: 0.8 },
         '100%': { opacity: 1 },
-      }, 'bounce'),
+      }, 'bounce') as any,
     }}
   >
     {text}

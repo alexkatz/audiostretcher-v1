@@ -2,6 +2,7 @@
 **/node_modules/
 client/dist/
 **/dist/
+**/public
 **/.awcache/
 **/npm-debug.log
 **/.DS_Store

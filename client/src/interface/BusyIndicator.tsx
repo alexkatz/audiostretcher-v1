@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Radium from 'radium';
+import Radium from 'radium';
 import { Color } from '../shared/colors';
 
 const orbStyle: React.CSSProperties = {
@@ -13,7 +13,7 @@ const orbStyle: React.CSSProperties = {
     '0%': { transform: 'scale(0.2)' },
     '50%': { transform: 'scale(0.6)' },
     '100%': { transform: 'scale(0.0)' },
-  }, 'bounce'),
+  }, 'bounce') as any,
 };
 
 const BusyIndicator = Radium(() => (

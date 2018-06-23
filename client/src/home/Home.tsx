@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AutoSizer } from 'react-virtualized';
 import { DropzoneProps, DropFilesEventHandler } from 'react-dropzone';
-import { StyleRoot } from 'radium';
+import Radium from 'radium';
 import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
 import { Style } from '../shared/styles';
@@ -47,7 +47,7 @@ class Home extends React.Component<any, HomeState> {
     return (
       <AutoSizer>
         {({ width, height }) => (
-          <StyleRoot>
+          <Radium.StyleRoot>
             <div
               style={{
                 width,
@@ -82,7 +82,7 @@ class Home extends React.Component<any, HomeState> {
                 )}
               </Dropzone>
             </div>
-          </StyleRoot>
+          </Radium.StyleRoot>
         )}
       </AutoSizer>
     );

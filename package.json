@@ -4,18 +4,23 @@
   "description": "A simple vscode starter repo for experimentation or quick coding/debugging in Typescript with a couple of nice features.",
   "license": "MIT",
   "main": "dist/server.js",
+  "engines": {
+    "yarn": "1.7.0",
+    "node": "10.4.1"
+  },
   "scripts": {
     "build": "tsc --project tsconfig.json && cd client && yarn build",
     "clear": "rm -r dist",
     "lint-fix": "tslint -c tslint.json -p tsconfig.json --type-check --fix",
     "lint": "tslint -c tslint.json -p tsconfig.json --type-check --format codeFrame --force",
     "watch": "tsc --watch --project tsconfig.json",
-    "watch-lint": "tsc-watch --project tsconfig.json --onSuccess \"yarn lint\""
+    "watch-lint": "tsc-watch --project tsconfig.json --onSuccess \"yarn lint\"",
+    "start": "node ./dist/server.js",
+    "heroku-postbuild": "cd client && yarn build && cd .. && yarn build"
   },
   "devDependencies": {
     "@types/cors": "^2.8.3",
     "@types/express": "^4.11.1",
-    "@types/node": "^9.4.7",
     "tsc": "^1.20150623.0",
     "tsc-watch": "^1.0.17",
     "tslint": "^5.9.1",

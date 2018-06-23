@@ -8,7 +8,7 @@ const HANDLE_SIZE = 20;
 interface HorizontalSliderProps {
   style?: React.CSSProperties;
   percent: number;
-  selectedColor?: string | React.StyleHTMLAttributes<HTMLDivElement>;
+  selectedColor?: string;
   handleColor?: string;
   onPercentChange(percent: number, e: MouseEvent);
   label?: string;
