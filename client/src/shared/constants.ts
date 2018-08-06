@@ -1,7 +1,7 @@
 import { Locators } from '../interface/Track';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
-    ? 'http://musicalmind.io/audio'
+    ? 'http://www.musicalmind.io/audio'
     : 'http://localhost:3001/audio';
 
 const SLIDER_WIDTH = 75;
