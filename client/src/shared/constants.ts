@@ -1,7 +1,7 @@
 import { Locators } from '../interface/Track';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
-    ? 'http://audiostretcher.herokuapp.com/audio'
+    ? 'http://musicalmind.io'
     : 'http://localhost:3001/audio';
 
 const SLIDER_WIDTH = 75;
