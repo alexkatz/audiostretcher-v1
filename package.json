@@ -29,6 +29,6 @@
   "dependencies": {
     "cors": "^2.8.4",
     "express": "^4.16.3",
-    "ytdl-core": "^0.20.2"
+    "ytdl-core": "^0.29.1"
   }
 }
