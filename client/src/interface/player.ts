@@ -148,7 +148,11 @@ export class Player {
 
   public setAudioFromFile = (file: File) => {
     const fileReader = new FileReader();
-    fileReader.onloadend = () => this.setBuffer(fileReader.result);
+    fileReader.onloadend = () => {
+      if (typeof fileReader.result !== "string") {
+        this.setBuffer(fileReader.result);
+      }
+    };
     fileReader.readAsArrayBuffer(file);
   }
 

@@ -5,8 +5,8 @@
   "license": "MIT",
   "main": "dist/server.js",
   "engines": {
-    "yarn": "1.7.0",
-    "node": "10.4.1"
+    "yarn": "^1.10",
+    "node": "^11"
   },
   "scripts": {
     "build": "tsc --project tsconfig.json && cd client && yarn build",

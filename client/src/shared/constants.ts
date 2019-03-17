@@ -4,8 +4,6 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
     ? 'http://www.musicalmind.io/audio'
     : 'http://localhost:3001/audio';
 
-const SLIDER_WIDTH = 75;
-const CANVAS_HEIGHT_PERCENT = 0.7;
 const MIN_ALPHA = 0.5;
 const MAX_ALPHA = 5;
 const GET_PAN_FROM_PERCENT = (percent: number): number => (2 * percent) - 1;
@@ -75,8 +73,8 @@ export const Constant = {
         S: 83,
     },
     NO_OP: (() => { }) as () => void,
-    SLIDER_WIDTH,
-    CANVAS_HEIGHT_PERCENT,
+    SLIDER_WIDTH: 75,
+    CANVAS_HEIGHT_PERCENT: 0.7,
     LOCATORS_ARE_EQUAL,
     MIN_ALPHA,
     MAX_ALPHA,
