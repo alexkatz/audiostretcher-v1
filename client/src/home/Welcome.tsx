@@ -1,14 +1,12 @@
 import * as React from 'react';
-import Popover, { ArrowContainer } from 'react-tiny-popover';
 import { Style } from '../shared/styles';
 import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
-import { BusyIndicator } from '../interface/BusyIndicator';
 import { YoutubeInput } from '../interface/YoutubeInput';
 
 interface WelcomeProps {
   width: number;
-  onLoadUrl?(urlText: string);
+  onLoadUrl?(urlText: string): void;
   audioFetchProgress: number;
 }
 

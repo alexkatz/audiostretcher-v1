@@ -1,14 +1,12 @@
 import * as React from 'react';
 import { AutoSizer } from 'react-virtualized';
-import { DropzoneProps, DropFilesEventHandler } from 'react-dropzone';
+import Dropzone from 'react-dropzone'
 import Radium from 'radium';
 import { Color } from '../shared/colors';
 import { Constant } from '../shared/constants';
-import { Style } from '../shared/styles';
 import { Player, RemoveListener } from '../interface/player';
 import { Interface } from '../interface/Interface';
 import { Welcome } from './Welcome';
-const Dropzone = require('react-dropzone').default as React.ComponentType<DropzoneProps>;
 
 interface HomeState {
   audioBuffer: AudioBuffer;
@@ -53,28 +51,35 @@ class Home extends React.Component<any, HomeState> {
               <Dropzone
                 disabled={audioBuffer != null}
                 onDrop={([file]) => this.player.setAudioFromFile(file)}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                } as React.CSSProperties}
               >
-                {!audioBuffer && (
-                  <Welcome
-                    width={width}
-                    onLoadUrl={this.onLoadUrl}
-                    audioFetchProgress={audioFetchProgress}
-                  />
-                )}
-                {audioBuffer && (
-                  <Interface
-                    width={width}
-                    height={height}
-                    audioBuffer={audioBuffer}
-                    player={this.player}
-                    onLoadUrl={this.onLoadUrl}
-                    audioFetchProgress={audioFetchProgress}
-                  />
-                )}
+                {({ getRootProps, getInputProps }) =>
+                  <div
+                    {...getRootProps()}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                    } as React.CSSProperties}
+                  >
+                    <input {...getInputProps()} />
+                    {!audioBuffer && (
+                      <Welcome
+                        width={width}
+                        onLoadUrl={this.onLoadUrl}
+                        audioFetchProgress={audioFetchProgress}
+                      />
+                    )}
+                    {audioBuffer && (
+                      <Interface
+                        width={width}
+                        height={height}
+                        audioBuffer={audioBuffer}
+                        player={this.player}
+                        onLoadUrl={this.onLoadUrl}
+                        audioFetchProgress={audioFetchProgress}
+                      />
+                    )}
+                  </div>
+                }
               </Dropzone>
             </div>
           </Radium.StyleRoot>
@@ -112,7 +117,7 @@ class Home extends React.Component<any, HomeState> {
             this.setState({ audioFetchProgress }, () => readChunksRecursively(arrays, length));
           }
         };
-        
+
         readChunksRecursively([], 0);
       }
     });

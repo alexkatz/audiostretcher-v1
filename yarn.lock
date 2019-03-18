@@ -775,10 +775,10 @@ through@2, through@~2.3, through@~2.3.1:
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
 
-tsc-watch@^1.0.17:
-  version "1.1.39"
-  resolved "https://registry.yarnpkg.com/tsc-watch/-/tsc-watch-1.1.39.tgz#2575401009e6ddfe53e553e0152ec8d7e7a7c77a"
-  integrity sha512-+TClwG3mX//n37Zkq4MTfty/+v8BQfvgizcGBcCOQMShZ8Y3wUwfvzQf2jDxsNzAY+XDNDUknMvVb77HLQg/Og==
+tsc-watch@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/tsc-watch/-/tsc-watch-2.1.2.tgz#49e20e537507c18909f9d8246d365c4f1d3fa9a5"
+  integrity sha512-w80windZ4HAFpq2qtva/WsgfyYqS4CXTow+KjyO+AmYRFIDhzODUIK2BJW7M1Y8sL8NZUH0b4U1ET3436Q7Ctw==
   dependencies:
     cross-spawn "^5.1.0"
     node-cleanup "^2.1.2"

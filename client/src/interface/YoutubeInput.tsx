@@ -9,7 +9,7 @@ interface YoutubeInputProps {
   audioFetchProgress?: number;
   isPopoverOpen?: boolean;
   containerStyle?: React.CSSProperties;
-  onLoadUrl?(urlText: string);
+  onLoadUrl?(urlText: string): void;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onClick?: React.MouseEventHandler<HTMLInputElement>;

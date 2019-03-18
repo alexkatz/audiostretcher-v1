@@ -10,7 +10,7 @@ interface HorizontalSliderProps {
   percent: number;
   selectedColor?: string;
   handleColor?: string;
-  onPercentChange(percent: number, e: MouseEvent);
+  onPercentChange(percent: number, e: MouseEvent): void;
   label?: string;
 }
 

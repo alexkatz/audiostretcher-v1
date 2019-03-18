@@ -19,7 +19,7 @@ interface InterfaceProps {
   height: number;
   audioBuffer?: AudioBuffer;
   player: Player;
-  onLoadUrl?(urlText: string);
+  onLoadUrl?(urlText: string): void;
   audioFetchProgress: number;
 }
 

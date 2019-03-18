@@ -128,14 +128,12 @@ class Track extends React.Component<TrackProps, Partial<TrackState>> {
 
   public componentDidUpdate(prevProps: TrackProps, prevState: TrackState) {
     if (this.state.zoomLocators !== prevState.zoomLocators || this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
-      console.log('getting waveform rects again');
       this.setState({ waveformRects: this.getWaveformRects() }, this.draw);
       return;
     }
 
     if (!Constant.LOCATORS_ARE_EQUAL(this.state.loopLocators, prevState.loopLocators)) {
       this.props.player.setLoop(this.getTrueLocators(this.getRelativeLocators(this.state.loopLocators)));
-      console.log('setting loop and drawing');
       this.draw();
     }
   }

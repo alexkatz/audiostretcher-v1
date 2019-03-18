@@ -6,7 +6,7 @@ import { Style } from '../shared/styles';
 interface VerticalSliderProps {
   style?: React.CSSProperties;
   percent: number;
-  onPercentChange(percent: number);
+  onPercentChange(percent: number): void;
   defaultValue?: number;
   label?: string;
 }
@@ -37,7 +37,6 @@ class VerticalSlider extends React.Component<VerticalSliderProps> {
     const {
       style,
       percent,
-      onPercentChange,
       label,
     } = this.props;
     const height = this.containerDiv ? this.containerDiv.getBoundingClientRect().height : 0;
