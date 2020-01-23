@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "engines": {
     "yarn": "^1.10",
-    "node": "^11"
+    "node": "^13"
   },
   "scripts": {
     "build": "tsc --project tsconfig.json && cd client && yarn build",
@@ -29,6 +29,6 @@
   "dependencies": {
     "cors": "^2.8.4",
     "express": "^4.16.3",
-    "ytdl-core": "^0.29.1"
+    "ytdl-core": "^1.0.7"
   }
 }
