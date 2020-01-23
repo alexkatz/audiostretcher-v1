@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "engines": {
-    "yarn": "^1.27",
+    "yarn": "^1.21",
     "node": "^13"
   },
   "scripts": {
