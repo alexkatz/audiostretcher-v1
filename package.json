@@ -5,7 +5,7 @@
   "license": "MIT",
   "main": "dist/server.js",
   "engines": {
-    "yarn": "^1.10",
+    "yarn": "^1.27",
     "node": "^13"
   },
   "scripts": {

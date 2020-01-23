@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "license": "MIT",
   "engines": {
-    "yarn": "1.15.2",
-    "node": "11.11.0"
+    "yarn": "^1.27",
+    "node": "^13"
   },
   "scripts": {
     "start": "webpack-dev-server --mode=development --inline --hot",
