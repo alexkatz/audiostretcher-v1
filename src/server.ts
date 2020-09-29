@@ -5,10 +5,12 @@ import ytdl = require('ytdl-core');
 
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:8080',
-  exposedHeaders: ['Content-Length'],
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:8080',
+    exposedHeaders: ['Content-Length'],
+  }),
+);
 
 app.get('/audio', (req, res) => {
   try {
